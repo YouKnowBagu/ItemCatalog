@@ -1,7 +1,8 @@
-from flask import Flask
+from flask import Flask, render_template, redirect, url_for, request
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from database_setup import Base, User, Category, Item
+from forms import RegistrationForm
 
 engine = create_engine('sqlite:///catalog.db')
 Base.metadata.bind=engine
@@ -25,11 +26,25 @@ app = Flask(__name__)
 # /catalog/<int: category_id>/items/new
 # /catalog/<int: category_id>/item/<int: item_id>/edit
 # /catalog/<int: category_id>/item/<int: item_id>/delete
+# /catalog/register
+# /catalog/login
+# /catalog/logout
 
 @app.route('/')
 @app.route('/catalog/')
 def home():
     return "Home"
+
+@app.route('/register', methods=['GET', 'POST'])
+def register():
+    form = RegistrationForm(request.form)
+    if request.method == 'POST' and form.validate():
+        user = User(form.username.data, form.email.data,
+                    form.password.data)
+        db_session.add(user)
+        flash('Thanks for registering')
+        return redirect(url_for('login'))
+    return render_template('register.html', form=form)
 
 @app.route('/catalog/categories')
 def categoryList():
