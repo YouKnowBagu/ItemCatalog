@@ -9,3 +9,6 @@ class RegistrationForm(Form):
     ])
     confirm = PasswordField('Repeat Password')
     accept_tos = BooleanField('I accept the TOS', [validators.DataRequired()])
+
+# class NewCategory(Form):
+#     name = StringField('Category Name', [validators])

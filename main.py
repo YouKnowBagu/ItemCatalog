@@ -1,14 +1,18 @@
 from flask import Flask, render_template, redirect, url_for, request
-from sqlalchemy import create_engine
-from sqlalchemy.orm import sessionmaker
+from sqlalchemy import create_engine, desc
+from sqlalchemy.orm import sessionmaker, scoped_session
 from database_setup import Base, User, Category, Item
 from forms import RegistrationForm
 
 engine = create_engine('sqlite:///catalog.db')
 Base.metadata.bind=engine
 
-DBSession = sessionmaker(bind = engine)
-session = DBSession()
+DBSession = scoped_session(sessionmaker(autocommit=False,
+	autoflush=False,
+	bind=engine))
+# session = DBSession()
+
+Base.query = DBSession.query_property()
 
 app = Flask(__name__)
 # routes:
@@ -33,7 +37,9 @@ app = Flask(__name__)
 @app.route('/')
 @app.route('/catalog/')
 def home():
-    return "Home"
+    categories = Category.query.all()
+    items=Item.query.order_by(desc(Item.created)).limit(10).all()
+    return render_template('main.html', categories=categories, items=items)
 
 @app.route('/register', methods=['GET', 'POST'])
 def register():
@@ -46,20 +52,20 @@ def register():
         return redirect(url_for('login'))
     return render_template('register.html', form=form)
 
-@app.route('/catalog/categories')
-def categoryList():
-    output = ''
-    l = session.query(Category).all()
-    for i in l:
-        output += str(i.id)
-        output += "</br>"
-    return output
+# @app.route('/catalog/categories')
+# def categoryList():
+#     output = ''
+#     l = Category.query.all()
+#     for i in l:
+#         output += str(i.name)
+#         output += "</br>"
+#     return output
 
 @app.route('/catalog/categories/new')
 def newCategory():
     return "New category"
 
-@app.route('/catalog/category/<int:category_id>/edit')
+@app.route('/catalog/category/<string:category_name>/edit')
 def editCategory(category_id):
     return "Edit category"
 
@@ -67,15 +73,22 @@ def editCategory(category_id):
 def deleteCategory():
     return "Delete category"
 
-@app.route('/catalog/<int:category_id>/items')
-@app.route('/catalog/<int:category_id>')
-def categoryItems():
-    return "Category items"
+@app.route('/catalog/<string:category_name>/items')
+@app.route('/catalog/<string:category_name>')
+def categoryItems(category_name):
+    output = ''
+    category = Category.query.filter_by(name=category_name).one()
+    items = Item.query.filter_by(category = category).all()
+    return render_template('category.html', items=items)
 
 @app.route('/catalog/<int:category_id>/items/new')
 def newItem():
-    return "New item"
-
+    output = ''
+    l = session.query(Item).all()
+    for i in l:
+        output += str(i.name)
+        output += "</br>"
+    return output
 @app.route('/catalog/<int:category_id>/item/<int:item_id>/edit')
 def editItem():
     return "Edit item"
@@ -88,4 +101,4 @@ def deleteItem():
 
 if __name__ == '__main__':
     app.debug = True
-    app.run(host = '0.0.0.0', port = 5000)
+    app.run(host = '0.0.0.0', port = 8080)

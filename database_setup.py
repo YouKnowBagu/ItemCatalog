@@ -30,9 +30,10 @@ class Category(Base):
     created = Column('Created', DateTime())
     picture = Column(Text, nullable = True)
     picture_data = Column(LargeBinary, nullable = True)
+    # item = relationship("Item", backref="category")
 
-    user_id = Column(Integer, ForeignKey("user.id"))
-    user = relationship(User)
+    # user_id = Column(Integer, ForeignKey("user.id"))
+    # user = relationship(User)
 
 
 class Item(Base):
@@ -46,8 +47,8 @@ class Item(Base):
     picture = Column(Text, nullable = True)
     picture_data = Column(LargeBinary, nullable = True)
 
-    user_id = Column(Integer, ForeignKey("user.id"))
-    user = relationship(User)
+    # user_id = Column(Integer, ForeignKey("user.id"))
+    # user = relationship(User)
     category_id = Column(Integer, ForeignKey("category.id"))
     category = relationship(Category)
 
@@ -64,14 +65,14 @@ if __name__ == '__main__':
     session.add(User(name="Murr"))
     session.add(User(name="Sean"))
     session.add(Category(name="Electronics"))
-    session.add(Item(name="Computer"))
+    session.add(Item(name="Computer", category_id=1))
     session.add(Category(name="Books"))
-    session.add(Item(name="Great Gatsby"))
+    session.add(Item(name="Great Gatsby", category_id=2))
     session.add(Category(name="Sports"))
-    session.add(Item(name="Baseball"))
+    session.add(Item(name="Baseball", category_id=3))
     session.add(Category(name="Videogames"))
-    session.add(Item(name="Assassin's Creed"))
+    session.add(Item(name="Assassin's Creed",category_id=4))
     session.add(Category(name="Movies"))
-    session.add(Item(name="The Big Lebowski"))
+    session.add(Item(name="The Big Lebowski", category_id=5))
 
     session.commit()
