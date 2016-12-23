@@ -1,14 +1,18 @@
-from wtforms import Form, BooleanField, StringField, PasswordField, validators
+from wtforms import Form, BooleanField, StringField, PasswordField, validators, RadioField
+
 
 class RegistrationForm(Form):
     username = StringField('Username', [validators.Length(min=4, max=25)])
-    email = StringField('Email Address', [validators.Length(min=6, max=35)])
+    # email = StringField('Email Address', [validators.Length(min=6, max=35)])
     password = PasswordField('New Password', [
-        validators.DataRequired(),
-        validators.EqualTo('confirm', message='Passwords must match')
+    validators.DataRequired(),
+    validators.EqualTo('confirm', message='Passwords must match')
     ])
     confirm = PasswordField('Repeat Password')
     accept_tos = BooleanField('I accept the TOS', [validators.DataRequired()])
 
+class AddForm(Form):
+    name = StringField('ItemName',[validators.Length(min=4, max=25)])
+    category = RadioField('Category',)
 # class NewCategory(Form):
 #     name = StringField('Category Name', [validators])

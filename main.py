@@ -10,7 +10,7 @@ Base.metadata.bind=engine
 DBSession = scoped_session(sessionmaker(autocommit=False,
 	autoflush=False,
 	bind=engine))
-# session = DBSession()
+session = DBSession()
 
 Base.query = DBSession.query_property()
 
@@ -45,11 +45,10 @@ def home():
 def register():
     form = RegistrationForm(request.form)
     if request.method == 'POST' and form.validate():
-        user = User(form.username.data, form.email.data,
-                    form.password.data)
-        db_session.add(user)
+        user = User(form.username.data)
+        session.add(user)
         flash('Thanks for registering')
-        return redirect(url_for('login'))
+        return redirect("google.com", code=302)
     return render_template('register.html', form=form)
 
 # @app.route('/catalog/categories')
@@ -79,7 +78,7 @@ def categoryItems(category_name):
     output = ''
     category = Category.query.filter_by(name=category_name).one()
     items = Item.query.filter_by(category = category).all()
-    return render_template('category.html', items=items)
+    return render_template('categoryview.html', category = category, items=items)
 
 @app.route('/catalog/<int:category_id>/items/new')
 def newItem():

@@ -17,6 +17,7 @@ class User(Base):
     id = Column(Integer, primary_key = True)
     name = Column(String(255), nullable = False)
     created = Column('Created', DateTime())
+    password = Column(String, nullable = True)
     picture = Column(Text, nullable = True)
     picture_data = Column(LargeBinary, nullable = True)
 
