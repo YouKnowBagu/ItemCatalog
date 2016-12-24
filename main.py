@@ -150,9 +150,47 @@ def gconnect():
 #         output += "</br>"
 #     return output
 
-@app.route('/catalog/categories/new')
+@app.route('/gdisconnect')
+def gdisconnect():
+    credentials = login_session.get('credentials')
+    if credentials is None:
+        response = make_response(json.dumps('Current user not connected.'),401)
+        response.headers['Content-Type'] = 'application/json'
+        return response
+
+    access_token = credentials.access_token
+    url = 'https://accounts.google.com/o/oauth2/revoke?token=%s' % access_token
+    h = httplib2.Http()
+    result = h.request(url, 'GET')[0]
+
+    if result['status'] == '200':
+        #Reset session
+        del login_session['credentials']
+        del login_session['gplus_id']
+        del login_session['username']
+        del login_session['email']
+        del login_session['picture']
+
+        response = make_response(json.dumps('Successfully disconnected.'), 200)
+        response.headers['Content-Type'] = 'application/json'
+        return response
+    else:
+        response = make_response(json.dumps('Failed to revoke token for given user.'), 400)
+        response.headers['Content-Type'] = 'application/json'
+        return response
+
+@app.route('/catalog/categories/new', methods=['GET','POST'])
 def newCategory():
-    return "New category"
+    if 'username' not in login_session:
+        return redirect('/login')
+    if request.method == 'POST':
+        newCategory = Category(name = request.form['name'])
+        session.add(newCategory)
+        flash('New category successfully created')
+        session.commit()
+        return redirect(url_for('home'))
+    else:
+        return render_template('newCategory.html')
 
 @app.route('/catalog/category/<string:category_name>/edit')
 def editCategory(category_id):
