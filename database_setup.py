@@ -16,7 +16,7 @@ class User(Base):
 
     id = Column(Integer, primary_key = True)
     name = Column(String(255), nullable = False)
-    created = Column('Created', DateTime())
+    email = Column(String, nullable = False)
     picture = Column(Text, nullable = True)
     picture_data = Column(LargeBinary, nullable = True)
 
@@ -26,15 +26,17 @@ class Category(Base):
 
     id = Column(Integer, primary_key = True)
     name = Column(String(255), nullable = False)
-    description = Column(Text, nullable = True)
+    user_id = Column(Integer, ForeignKey('user.id'))
+    user = relationship(User)
     created = Column('Created', DateTime())
-    picture = Column(Text, nullable = True)
-    picture_data = Column(LargeBinary, nullable = True)
-    # item = relationship("Item", backref="category")
 
-    # user_id = Column(Integer, ForeignKey("user.id"))
-    # user = relationship(User)
-
+    @property
+    def serialize(self):
+        """Return object data in easily serializable format"""
+        return {
+            'name': self.name,
+            'id': self.id,
+        }
 
 class Item(Base):
 
@@ -44,13 +46,21 @@ class Item(Base):
     name = Column(String(255), nullable = False)
     description = Column(Text, nullable = True)
     created = Column('Created', DateTime())
-    picture = Column(Text, nullable = True)
-    picture_data = Column(LargeBinary, nullable = True)
-
-    # user_id = Column(Integer, ForeignKey("user.id"))
-    # user = relationship(User)
-    category_id = Column(Integer, ForeignKey("category.id"))
+    price = Column(String(8))
+    category_id = Column(Integer, ForeignKey('category.id'))
     category = relationship(Category)
+    user_id = Column(Integer, ForeignKey('user.id'))
+    user = relationship(User)
+
+    @property
+    def serialize(self):
+        """Return object data in easily serializable format"""
+        return {
+            'name': self.name,
+            'description': self.description,
+            'id': self.id,
+            'price': self.price,
+        }
 
 if __name__ == '__main__':
     engine = create_engine('sqlite:///catalog.db')
@@ -59,11 +69,11 @@ if __name__ == '__main__':
     DBSession = sessionmaker(bind=engine)
     session = DBSession()
 
-    session.add(User(name="Q"))
-    session.add(User(name="Joe"))
-    session.add(User(name="Sal"))
-    session.add(User(name="Murr"))
-    session.add(User(name="Sean"))
+    session.add(User(name="Q", email="queue@queue.com"))
+    session.add(User(name="Joe", email='joe@joe.com'))
+    session.add(User(name="Sal", email='sal@sal.com'))
+    session.add(User(name="Murr", email='murr@murr.com'))
+    session.add(User(name="Sean", email='sean@sean.com'))
     session.add(Category(name="Electronics"))
     session.add(Item(name="Computer", category_id=1))
     session.add(Category(name="Books"))
