@@ -49,14 +49,12 @@ session = DBSession()
 @app.route('/')
 @app.route('/catalog/')
 def home():
-	access_token = login_session.get('access_token')
-	ac = str(access_token)
 	output = ''
 	# output += str(login_session[:])
 	print output
 	categories = session.query(Category).all()
 	items=session.query(Item).order_by(desc(Item.created)).limit(10).all()
-	return render_template('main.html', ac = ac, categories=categories, items=items)
+	return render_template('main.html', categories=categories, items=items)
 
 @app.route('/login')
 def showLogin():
@@ -193,13 +191,20 @@ def gdisconnect():
 
 @app.route('/clearSession')
 def clearSession():
-    login_session.clear()
-    return "Session cleared"
+	login_session.clear()
+	return "Session cleared"
 
-@app.route('/catalog/tester')
-def dataTest():
-	test = session.query(User).all()
-	return render_template('tester.html',test = test)
+@app.route('/catalog/<int:item_id>/tester', methods=['GET', 'POST'])
+def dataTest(item_id):
+		categories = session.query(Category).all()
+		item = session.query(Item).get(item_id)
+		if request.method == 'GET':
+			return render_template('tester.html', categories=categories, item=item)
+		else:
+			session.delete(item)
+			session.commit()
+			flash("The item '%s' has been removed." % item.name, "success")
+			return redirect(url_for('home'))
 
 @app.route('/catalog/categories/new', methods=['GET','POST'])
 def newCategory():
@@ -220,7 +225,15 @@ def editCategory(category_id):
 
 @app.route('/catalog/category/<int:category_id>/delete')
 def deleteCategory():
-	return "Delete category"
+	categories = session.query(Category).all()
+	item = session.query(Item).get(item_id)
+	if request.method == 'GET':
+		return render_template('tester.html', categories=categories, item=item)
+	else:
+		session.delete(item)
+		session.commit()
+		flash("The item '%s' has been removed." % item.name, "success")
+		return redirect(url_for('home'))
 
 @app.route('/catalog/<int:category_id>/items')
 @app.route('/catalog/<int:category_id>')
@@ -246,10 +259,18 @@ def newItem(category_id):
 def editItem():
 	return "Edit item"
 
-@app.route('/catalog/<int:category_id>/item/<int:item_id>/delete')
+@app.route('/catalog/<int:category_id>/item/<int:item_id>/delete', methods=['GET', 'POST'])
 def deleteItem():
-	return "Delete item"
-### Helper functions
+		categories = session.query(Category).all()
+		item = session.query(Item).get(item_id)
+		if request.method == 'GET':
+			return render_template('tester.html', categories=categories, item=item)
+		else:
+			session.delete(item)
+			session.commit()
+			flash("The item '%s' has been removed." % item.name, "success")
+			return redirect(url_for('home'))
+	### Helper functions
 
 def createUser(login_session):
 	newUser = User(name = login_session['username'], email = login_session['email'], picture = login_session['picture'])

@@ -3,22 +3,26 @@
 
 <head>
 </head>
-    <body>
-        	<div class="main">
-                <ul>
-                {% for category in categories %}
-                <li><h1>{{category.name}}</h1></li>
-                {% endfor %}
-            </ul>
-        		<ul>
-        				{% for item in items %}
-        				<li><p>{{item.name}},
-                        {{ac}}</p>
-        				</li>
-        				{% endfor %}
-        			</ul>
-        		</div>
-        	</div>
 
-    </body>
-    </html>
+<body>
+    <div class="main">
+        <ul>
+            {% for category in categories %}
+            <li>
+                <h1>{{category.name}}</h1></li>
+            {% endfor %}
+        </ul>
+        <ul>
+            {% for item in items %}
+            <li>
+                <p>{{item.name}},
+                </p>
+            </li>
+            {% endfor %}
+        </ul>
+    </div>
+    </div>
+
+</body>
+
+</html>
