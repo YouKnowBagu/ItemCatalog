@@ -1,4 +1,6 @@
-from wtforms import Form, BooleanField, StringField, PasswordField, validators, RadioField
+from wtforms import Form, BooleanField, TextField, StringField, PasswordField, validators, RadioField
+from flask_wtf import FlaskForm
+
 
 
 class RegistrationForm(Form):
@@ -11,8 +13,6 @@ class RegistrationForm(Form):
     confirm = PasswordField('Repeat Password')
     accept_tos = BooleanField('I accept the TOS', [validators.DataRequired()])
 
-class AddForm(Form):
-    name = StringField('ItemName',[validators.Length(min=4, max=25)])
-    category = RadioField('Category',)
-# class NewCategory(Form):
-#     name = StringField('Category Name', [validators])
+class EditForm(FlaskForm):
+    name = StringField('Name')
+    description = TextField('Description')

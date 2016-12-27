@@ -9,13 +9,12 @@
         <ul>
             {% for category in categories %}
             <li>
-                <h1>{{category.name}}</h1></li>
+                <h1>{{category.name}}: {{category.id}}</h1></li>
             {% endfor %}
         </ul>
-        <ul>
-            {% for item in items %}
+        <ul> {% for item in items %}
             <li>
-                <p>{{item.name}},
+                <p>{{item.name}}: {{item.id}}
                 </p>
             </li>
             {% endfor %}
