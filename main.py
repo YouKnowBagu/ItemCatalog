@@ -49,7 +49,7 @@ session = DBSession()
 # /catalog/login
 # /catalog/logout
 
-
+#TODO: STUFF
 @app.route('/')
 @app.route('/catalog/')
 def home():
@@ -205,6 +205,7 @@ def dataTest(category_id):
     if request.method == 'POST':
         if request.form['name']:
             editedcategory.name = request.form['name']
+            session.commit()
             flash('Catalog Successfully Edited %s' % editedcategory.name)
             return redirect(url_for('home'))
         else:
@@ -213,10 +214,7 @@ def dataTest(category_id):
         return render_template('editCategory.html', category=editedcategory)
 
 
-
-
-
-@app.route('/catalog/categories/new', methods=['GET', 'POST'])
+@app.route('/category/new', methods=['GET', 'POST'])
 def newCategory():
     if 'username' not in login_session:
         return redirect('/login')
@@ -230,9 +228,19 @@ def newCategory():
     else:
         return render_template('newCategory.html')
 
-# REVIEW: FILL IN WORKING EDIT CODE HERE
-# @app.route('/category/<int:category_id>/edit', methods = ['GET', 'POST'])
-# def editCategory(category_id):
+
+@app.route('/category/edit/<int:category_id>', methods = ['GET', 'POST'])
+def editCategory(category_id):
+    editedcategory = session.query(Category).filter_by(id=category_id).one()
+    if request.method == 'POST':
+        if request.form['name']:
+            editedcategory.name = request.form['name']
+            flash('Category Successfully Edited %s' % editedcategory.name)
+            return redirect(url_for('home'))
+        else:
+            return redirect(url_for('editCategory', category_id=category_id))
+    else:
+        return render_template('editCategory.html', category=editedcategory)
 
 
 @app.route('/category/<int:category_id>/delete', methods=['GET', 'POST'])
@@ -248,11 +256,11 @@ def deleteCategory(category_id):
         return redirect(url_for('home'))
 
 
-@app.route('/catalog/<int:category_id>/items')
+@app.route('/<string:category_name>/items')
 @app.route('/catalog/<int:category_id>')
-def categoryItems(category_id):
-    category = session.query(Category).filter_by(id=category_id).one()
-    items = session.query(Item).filter_by(category_id=category_id).all()
+def categoryItems(category_name):
+    category = session.query(Category).filter_by(name = category_name).one()
+    items = session.query(Item).filter_by(category_name=category_name).all()
     return render_template('categoryview.html', category=category, items=items)
 
 
@@ -272,20 +280,25 @@ def newItem(category_id):
         return render_template('newitem.html', category_id=category_id)
 
 
-# REVIEW: UPDATE WITH TESTER CODE FOR ITEM
-@app.route('/catalog/<int:category_id>/item/<int:item_id>/edit',
+@app.route('/item/edit/<string:category_name>/<int:item_id>',
            methods=['GET', 'POST'])
-def editItem():
-    if request.method == 'GET':
-        return render_template('testedit.html', categories=categories, item=item)
+def editItem(category_name, item_id):
+    category = session.query(Category).filter_by(name = category_name)
+    editeditem = session.query(Item).filter_by(id=item_id).one()
+    if request.method == 'POST':
+        if request.form['name']:
+            editeditem.name = request.form['name']
+            session.commit()
+            flash('Item Successfully Edited %s' % editeditem.name)
+            return redirect(url_for('home'))
+        else:
+            return redirect(url_for('editItem', category_name = category_name, item_id=item_id))
     else:
-        session.commit(item)
-        flash("The item '%s' has been removed." % item.name, "success")
-        return redirect(url_for('home'))
+        return render_template('editItem.html', category_name = category_name, item=editeditem)
 
 
-@app.route('/item/<int:item>/delete', methods=['GET', 'POST'])
-def deleteItem():
+@app.route('/item/delete/<int:item_id>', methods=['GET', 'POST'])
+def deleteItem(item_id):
     """Find and delete an item"""
     categories = session.query(Category).all()
     item = session.query(Item).get(item_id)
