@@ -1,5 +1,9 @@
 """Docstring placeholder."""
-
+#TODO Local authorization
+#TODO Add category button on home postmessage
+#TODO Login/logout design
+#TODO Search?
+#TODO
 import json
 import random
 import string
@@ -7,14 +11,20 @@ import string
 import httplib2
 import requests
 from flask import session as login_session
-from flask import (Flask, flash, jsonify, make_response, redirect,
-                   render_template, request, url_for)
+from flask import (Flask, flash, jsonify, make_response, redirect, render_template, request, url_for)
+from  logindecorator import login_required
+from flask_login import LoginManager, login_user, logout_user, login_required
 from oauth2client.client import FlowExchangeError, flow_from_clientsecrets
 from sqlalchemy import asc, create_engine, desc
 from sqlalchemy.orm import scoped_session, sessionmaker
 from database_setup import Base, Category, Item, User
 
+
+login_manager = LoginManager()
+
 app = Flask(__name__)
+
+login_manager.init_app(app)
 
 CLIENT_ID = json.loads(open('client_secrets.json', 'r').read())[
     'web']['client_id']
@@ -43,13 +53,15 @@ session = DBSession()
 # /item/<string:item_name>/delete - delete item
 # /login - login via google
 # /gdisconnect - delete user session
+
+
 @app.route('/')
 @app.route('/catalog/')
 def home():
     """Docstring placeholder."""
     categories = session.query(Category).all()
     items = session.query(Item).order_by(desc(Item.created)).limit(10).all()
-    return render_template('main.html', categories=categories, items=items)
+    return render_template('index.html', categories=categories, items=items)
 
 
 @app.route('/login')
@@ -169,6 +181,7 @@ def gdisconnect():
         del login_session['username']
         del login_session['email']
         del login_session['picture']
+        del login_session['user_id']
 
         response = make_response(json.dumps('Successfully disconnected.'), 200)
         response.headers['Content-Type'] = 'application/json'
@@ -186,21 +199,31 @@ def clearSession():
     login_session.clear()
     login_session['__invalidate__'] = True
     return "Session cleared"
-#
-#
-# @app.route('/item/<int:category_id>/tester', methods=['GET', 'POST'])
-# def dataTest(category_id):
-#     editedcategory = session.query(Category).filter_by(id=category_id).one()
-#     if request.method == 'POST':
-#         if request.form['name']:
-#             editedcategory.name = request.form['name']
-#             session.commit()
-#             flash('Catalog Successfully Edited %s' % editedcategory.name)
-#             return redirect(url_for('home'))
-#         else:
-#             return redirect(url_for('dataTest', category_id=category_id))
-#     else:
-#         return render_template('editCategory.html', category=editedcategory)
+
+@app.route('/cleardb')
+def cleardb():
+    """Docstring placeholder."""
+    users = session.query(User).all()
+    for user in users:
+        session.delete(user)
+    session.commit()
+    return "User DB cleared"
+
+
+@app.route('/isowner/<string:category_name>', methods=['GET', 'POST'])
+def dataTest():
+    editedcategory = session.query(
+        Category).filter_by(name=category_name).one()
+    if request.method == 'POST':
+        if request.form['name']:
+            editedcategory.name = request.form['name']
+            editedcategory.user_id = login_session['user_id']
+            flash('Category Successfully Edited %s' % editedcategory.name)
+            return redirect(url_for('home'))
+        else:
+            return redirect(url_for('editCategory', category_name=category_name))
+    else:
+        return render_template('editCategory.html', category=editedcategory)
 
 
 @app.route('/category/new', methods=['GET', 'POST'])
@@ -218,23 +241,28 @@ def newCategory():
         return render_template('newCategory.html')
 
 
-@app.route('/category/edit/<int:category_id>', methods = ['GET', 'POST'])
-def editCategory(category_id):
-    editedcategory = session.query(Category).filter_by(id=category_id).one()
+@app.route('/category/<string:category_name>/edit', methods=['GET', 'POST'])
+def editCategory(category_name):
+    if 'username' not in login_session:
+        return redirect('/login')
+    editedcategory = session.query(
+        Category).filter_by(name=category_name).one()
     if request.method == 'POST':
         if request.form['name']:
             editedcategory.name = request.form['name']
             flash('Category Successfully Edited %s' % editedcategory.name)
             return redirect(url_for('home'))
         else:
-            return redirect(url_for('editCategory', category_id=category_id))
+            return redirect(url_for('editCategory', category_name=category_name))
     else:
         return render_template('editCategory.html', category=editedcategory)
 
 
 @app.route('/category/<string:category_name>/delete', methods=['GET', 'POST'])
 def deleteCategory(category_name):
-    category = session.query(Category).filter_by(name = category_name).one()
+    if 'username' not in login_session:
+        return redirect('/login')
+    category = session.query(Category).filter_by(name=category_name).one()
     if request.method == 'GET':
         return render_template('deleteCategory.html', category=category)
     else:
@@ -244,18 +272,16 @@ def deleteCategory(category_name):
         return redirect(url_for('home'))
 
 
-@app.route('/<string:category_name>/items')
-@app.route('/catalog/<int:category_id>')
-def categoryItems(category_name):
-    category = session.query(Category).filter_by(name = category_name).one()
-    items = session.query(Item).filter_by(category_name=category_name).all()
-    return render_template('categoryview.html', category=category, items=items)
+@app.route('/<string:category_name>')
+def viewCategory(category_name):
+    category = session.query(Category).filter_by(name=category_name).first()
+    items = session.query(Item).filter_by(category_id=Item.category_id).all()
+    return render_template('category.html', category=category, items=items)
 
 
-@app.route('/items/new', methods=['GET', 'POST'])
+@app.route('/item/new', methods=['GET', 'POST'])
+@login_required
 def newItem():
-    if 'username' not in login_session:
-        return redirect('/login')
     if request.method == 'POST':
         newItem = Item(name=request.form['name'], description=request.form[
                        'description'])
@@ -267,11 +293,11 @@ def newItem():
         return render_template('newitem.html')
 
 
-@app.route('/item/edit/<string:category_name>/<int:item_id>',
+@app.route('/item/<string:item_name>/edit',
            methods=['GET', 'POST'])
-def editItem(category_name, item_id):
-    category = session.query(Category).filter_by(name = category_name)
-    editeditem = session.query(Item).filter_by(id=item_id).one()
+@login_required
+def editItem(item_name):
+    editeditem = session.query(Item).filter_by(name=item_name).one()
     if request.method == 'POST':
         if request.form['name']:
             editeditem.name = request.form['name']
@@ -279,9 +305,9 @@ def editItem(category_name, item_id):
             flash('Item Successfully Edited %s' % editeditem.name)
             return redirect(url_for('home'))
         else:
-            return redirect(url_for('editItem', category_name = category_name, item_id=item_id))
+            return redirect(url_for('editItem', item_name=item_name))
     else:
-        return render_template('editItem.html', category_name = category_name, item=editeditem)
+        return render_template('editItem.html', item=editeditem)
 
 
 @app.route('/item/<string:item_name>/delete', methods=['GET', 'POST'])
@@ -296,6 +322,28 @@ def deleteItem(item_name):
         flash("The item '%s' has been removed." % item.name, "success")
         return redirect(url_for('home'))
 
+@login_manager.user_loader
+def load_user(userid):
+    """User loader for Flask Login. As the user is only stored
+    in the session an attempt is made to retrieve the user from the session.
+    In case this fails, None is returned.
+
+    Args:
+        userid: the user id
+
+    Returns:
+        the user object or None in case the user could not be retrieved from the session
+    """
+    try:
+        print "load_user called: %s" % userid
+        user = session.query(User).filter_by(id=str(userid)).first()
+
+        if not user:
+            return None
+
+        return user
+    except:
+        return None
 
 def createUser(login_session):
     newUser = User(name=login_session['username'], email=login_session[

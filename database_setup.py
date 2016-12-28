@@ -22,6 +22,9 @@ class User(Base):
     picture = Column(Text, nullable=True)
     picture_data = Column(LargeBinary, nullable=True)
 
+    def is_authenticated(self):
+        return True
+
 
 class Category(Base):
 
