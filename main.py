@@ -31,32 +31,22 @@ session = DBSession()
 # Base.query = DBSession.query_property()
 
 # routes:
-# show all
-# /
-# /catalog/
-# /catalog/categories
-# /catalog/categories/new
-# /catalog/category/<int: category_id>/edit
-# /catalog/category/<int: category_id>/delete
-# /catalog/<int: category_id>/items
-# and
-# /catalog/<int: category_id>/
-# add item
-# /catalog/<int: category_id>/items/new
-# /catalog/<int: category_id>/item/<int: item_id>/edit
-# /catalog/<int: category_id>/item/<int: item_id>/delete
-# /catalog/register
-# /catalog/login
-# /catalog/logout
-
-#TODO: STUFF
+# / home - home
+# /catalog - home
+# /catalog/<string:category_name> - view all items of a specific category
+# /catalog/<string_category_name>/<string:item_id> - detail item view
+# /category/new -create new Category
+# /category/<string:category_name>/edit - edit category
+# /category/<string:category_name>/delete - delete category
+# /item/new - new items
+# /item/<string:item_name>/edit - edit item
+# /item/<string:item_name>/delete - delete item
+# /login - login via google
+# /gdisconnect - delete user session
 @app.route('/')
 @app.route('/catalog/')
 def home():
     """Docstring placeholder."""
-    output = ''
-    # output += str(login_session[:])
-    print output
     categories = session.query(Category).all()
     items = session.query(Item).order_by(desc(Item.created)).limit(10).all()
     return render_template('main.html', categories=categories, items=items)
@@ -155,7 +145,7 @@ def gconnect():
 
 @app.route('/gdisconnect')
 def gdisconnect():
-    """DOcstring placeholder."""
+    """Docstring placeholder."""
     access_token = login_session['access_token']
     print 'In gdisconnect access token is ' + access_token
     print 'User name is:'
@@ -196,22 +186,21 @@ def clearSession():
     login_session.clear()
     login_session['__invalidate__'] = True
     return "Session cleared"
-
-
-# REVIEW: THIS EDIT CODE IS WORKING
-@app.route('/item/<int:category_id>/tester', methods=['GET', 'POST'])
-def dataTest(category_id):
-    editedcategory = session.query(Category).filter_by(id=category_id).one()
-    if request.method == 'POST':
-        if request.form['name']:
-            editedcategory.name = request.form['name']
-            session.commit()
-            flash('Catalog Successfully Edited %s' % editedcategory.name)
-            return redirect(url_for('home'))
-        else:
-            return redirect(url_for('dataTest', category_id=category_id))
-    else:
-        return render_template('editCategory.html', category=editedcategory)
+#
+#
+# @app.route('/item/<int:category_id>/tester', methods=['GET', 'POST'])
+# def dataTest(category_id):
+#     editedcategory = session.query(Category).filter_by(id=category_id).one()
+#     if request.method == 'POST':
+#         if request.form['name']:
+#             editedcategory.name = request.form['name']
+#             session.commit()
+#             flash('Catalog Successfully Edited %s' % editedcategory.name)
+#             return redirect(url_for('home'))
+#         else:
+#             return redirect(url_for('dataTest', category_id=category_id))
+#     else:
+#         return render_template('editCategory.html', category=editedcategory)
 
 
 @app.route('/category/new', methods=['GET', 'POST'])
@@ -243,10 +232,9 @@ def editCategory(category_id):
         return render_template('editCategory.html', category=editedcategory)
 
 
-@app.route('/category/<int:category_id>/delete', methods=['GET', 'POST'])
-def deleteCategory(category_id):
-    category = session.query(Category).filter_by(id = category_id).one()
-    # item = session.query(Item).get(item_id)
+@app.route('/category/<string:category_name>/delete', methods=['GET', 'POST'])
+def deleteCategory(category_name):
+    category = session.query(Category).filter_by(name = category_name).one()
     if request.method == 'GET':
         return render_template('deleteCategory.html', category=category)
     else:
@@ -264,20 +252,19 @@ def categoryItems(category_name):
     return render_template('categoryview.html', category=category, items=items)
 
 
-@app.route('/catalog/<int:category_id>/items/new')
-def newItem(category_id):
+@app.route('/items/new', methods=['GET', 'POST'])
+def newItem():
     if 'username' not in login_session:
         return redirect('/login')
-    category = session.query(Category).filter_by(id=category_id).one()
     if request.method == 'POST':
-        newItem = Item(name=reqeust.form['name'], description=request.form[
-                       'description'], price=request.form['price'], category_id=category_id, user_id=category.user_id)
+        newItem = Item(name=request.form['name'], description=request.form[
+                       'description'])
         session.add(newItem)
         session.commit()
         flash('New Item, %s, successfully created.' % (newItem.name))
-        return redirect(url_for('showCategoryItems, category_id=category_id'))
+        return redirect(url_for('home'))
     else:
-        return render_template('newitem.html', category_id=category_id)
+        return render_template('newitem.html')
 
 
 @app.route('/item/edit/<string:category_name>/<int:item_id>',
@@ -297,13 +284,12 @@ def editItem(category_name, item_id):
         return render_template('editItem.html', category_name = category_name, item=editeditem)
 
 
-@app.route('/item/delete/<int:item_id>', methods=['GET', 'POST'])
-def deleteItem(item_id):
+@app.route('/item/<string:item_name>/delete', methods=['GET', 'POST'])
+def deleteItem(item_name):
     """Find and delete an item"""
-    categories = session.query(Category).all()
-    item = session.query(Item).get(item_id)
+    item = session.query(Item).filter_by(name=item_name).one()
     if request.method == 'GET':
-        return render_template('rawdelete.html', categories=categories, item=item)
+        return render_template('deleteItem.html', item=item)
     else:
         session.delete(item)
         session.commit()

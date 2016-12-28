@@ -1,14 +1,16 @@
 <html>
 <head>
 </head>
-<body>            <h1>New Category</h1>
-            <h1>Add Category</h1>
+<body>            <h1>New Item</h1>
+            <h1>Add item</h1>
 
-            <form  action="{{ url_for('newCategory') }}" method="post">
+            <form  action="{{ url_for('newItem') }}" method="post">
                     <label>Name:</label>
                     <input name="name" type="text" value="">
                     <label>Description:</label>
                     <input name="description" type="text" value="">
+                    <label>Category:</label>
+                    <input name='category' type='text' value=''>
                 <button type="submit">Create</button>
             </form>
                 <button type="submit">Cancel</button>
