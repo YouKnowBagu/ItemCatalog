@@ -21,6 +21,11 @@ class User(Base):
     email = Column(String, nullable=False)
     picture = Column(Text, nullable=True)
     picture_data = Column(LargeBinary, nullable=True)
+    github_access_token = Column(String(200))
+
+    # def __init__(self, github_access_token):
+        # self.github_access_token = github_access_token
+
 
     def is_authenticated(self):
         return True
@@ -83,20 +88,26 @@ if __name__ == '__main__':
     session.add(User(name="Sal", email='sal@sal.com'))
     session.add(User(name="Murr", email='murr@murr.com'))
     session.add(User(name="Sean", email='sean@sean.com'))
-    session.add(Category(name="Electronics"))
+    session.add(Category(name="Python"))
     session.add(Item(name="Computer",
                      description="Really cool awesome computer man.", category_id=1))
-    session.add(Category(name="Books"))
+    session.add(Category(name="Flask"))
     session.add(Item(name="Great Gatsby",
                      description="Holy cow read this book its great", category_id=2))
-    session.add(Category(name="Sports"))
+    session.add(Category(name="Google App Engine"))
     session.add(
         Item(name="Baseball", description="WTF baeballs are the best", category_id=3))
-    session.add(Category(name="Videogames"))
+    session.add(Category(name="Jinja2"))
     session.add(Item(name="Assassin's Creed",
                      description="it's a video game lol", category_id=4))
-    session.add(Category(name="Movies"))
+    session.add(Category(name="SQLAlchemy"))
     session.add(Item(name="The Big Lebowski",
                      description="Abide", category_id=5))
+    session.add(Category(name="PostgreSQL"))
+    session.add(Category(name="SQLite"))
+    session.add(Category(name="PsycoPG2"))
+    session.add(Category(name="WebApp2"))
+    session.add(Category(name="Cloud Datastore"))
+
 
     session.commit()
