@@ -19,20 +19,11 @@ from oauth2client.client import FlowExchangeError, flow_from_clientsecrets
 from sqlalchemy import asc, create_engine, desc
 from sqlalchemy.orm import scoped_session, sessionmaker
 from database_setup import Base, Category, Item, User
-from flask.ext.github import GitHub
 
 login_manager = LoginManager()
 
 app = Flask(__name__)
-app.config['GITHUB_CLIENT_ID'] = '9dcbd5554b3b28cc265a'
-app.config['GITHUB_CLIENT_SECRET'] = 'ff49357da715ce0996913bcc4493c3cfe9ab2b71'
 
-# # For GitHub Enterprise
-# app.config['GITHUB_BASE_URL'] = 'https://HOSTNAME/api/v3/'
-# app.config['GITHUB_AUTH_URL'] = 'https://HOSTNAME/login/oauth/'
-github_callback_url = "http://localhost:8080/github-callback"
-
-github = GitHub(app)
 login_manager.init_app(app)
 
 CLIENT_ID = json.loads(open('client_secrets.json', 'r').read())[
@@ -72,7 +63,6 @@ def home():
     """Docstring placeholder."""
     categories = session.query(Category).all()
     items = session.query(Item).order_by(desc(Item.created)).limit(10).all()
-    provider = login_session['provider']
     return render_template('index.html', categories=categories, items=items)
 
 
@@ -85,63 +75,12 @@ def showLogin():
     return render_template('login.html', STATE=state)
 
 
-@github.access_token_getter
-def token_getter():
-    user = g.user
-    if user is not None:
-        return user.github_access_token
-
-
-@app.route('/github-callback')
-@github.authorized_handler
-def authorized(access_token):
-    next_url = request.args.get('next') or url_for('home')
-    if access_token is None:
-        return redirect(url_for('home'))
-
-    user = session.query(User).filter_by(
-        github_access_token=access_token).first()
-    if user is None:
-        user = User(name = "", email="generic@generic.com", github_access_token=access_token)
-        session.add(user)
-    user.github_access_token = access_token
-    session.commit()
-    login_session['user_id'] = user.id
-    login_session['provider'] = 'github'
-    return redirect(next_url)
-
-
-# @app.route('/login')
-# def login():
-#         # send user back to the source page
-#     uri = github_callback_url + "?next=" + request.referrer
-#     return github.authorize(redirect_uri=uri)
-#     # if session.get('user_id', None) is None:
-#     #     return github.authorize()
-#     # else:
-#     #     flash('User is already logged in')
-#     #     return redirect(url_for('showCatalog'))
-
-
 @app.route('/logout')
 def logout():
     login_session.pop('user_id', None)
     return redirect(url_for('home'))
 
 
-# @app.before_request
-# def before_request():
-# 	g.user = None
-# 	if 'user_id' in session:
-# 		g.user = User.query.get(session['user_id'])
-# 		g.user.name = github.get('user')["name"]
-# 		g.user.avatar = github.get('user')["avatar_url"]
-# 		db_session.add(g.user)
-# 		db_session.commit()
-
-@app.route('/user')
-def user():
-    return str(github.get('user'))
 
 @app.route('/fbconnect', methods=['POST'])
 def fbconnect():
@@ -290,6 +229,15 @@ def gconnect():
     print "done!"
     return output
 
+@app.route('/fbdisconnect')
+def fbdisconnect():
+    facebook_id = login_session['facebook_id']
+    # The access token must me included to successfully logout
+    access_token = login_session['access_token']
+    url = 'https://graph.facebook.com/%s/permissions?access_token=%s' % (facebook_id,access_token)
+    h = httplib2.Http()
+    result = h.request(url, 'DELETE')[1]
+    return "you have been logged out"
 
 @app.route('/gdisconnect')
 def gdisconnect():
@@ -304,36 +252,19 @@ def gdisconnect():
             'Current user not connected.'), 401)
         response.headers['Content-Type'] = 'application/json'
         return response
-    url = 'https://accounts.google.com/o/oauth2/revoke?token=' + access_token
+    url = 'https://accounts.google.com/o/oauth2/revoke?token=%s' % access_token
     h = httplib2.Http()
     result = h.request(url, 'GET')[0]
     print result
     print result['status']
 
-    if result['status'] == '200':
-        # Reset session
-        del login_session['access_token']
-        del login_session['gplus_id']
-        del login_session['username']
-        del login_session['email']
-        del login_session['picture']
-        del login_session['user_id']
-
-        response = make_response(json.dumps('Successfully disconnected.'), 200)
-        response.headers['Content-Type'] = 'application/json'
-        return response
-    else:
-        response = make_response(json.dumps(
-            'Failed to revoke token for given user.'), 400)
-        response.headers['Content-Type'] = 'application/json'
-        return response
 
 
 @app.route('/clearSession')
 def clearSession():
     """Docstring placeholder."""
     login_session.clear()
-    login_session['__invalidate__'] = True
+    # login_session['__invalidate__'] = True
     session.commit()
     return "Session cleared"
 
@@ -489,7 +420,6 @@ def load_user(userid):
 
         if not user:
             return None
-
         return user
     except:
         return None
@@ -525,20 +455,20 @@ def disconnect():
         if login_session['provider'] == 'google':
             gdisconnect()
             del login_session['gplus_id']
-            del login_session['credentials']
+            del login_session['access_token']
         if login_session['provider'] == 'facebook':
             fbdisconnect()
             del login_session['facebook_id']
         del login_session['username']
         del login_session['email']
         del login_session['picture']
-        del login_session['user_id']
+        # del login_session['user_id']
         del login_session['provider']
         flash("You have successfully been logged out.")
-        return redirect(url_for('showRestaurants'))
+        return redirect(url_for('home'))
     else:
         flash("You were not logged in")
-        return redirect(url_for('showRestaurants'))
+        return redirect(url_for('home'))
 
 if __name__ == '__main__':
     app.secret_key = 'super_secret_key'

@@ -18,14 +18,9 @@ class User(Base):
     id = Column(Integer, primary_key=True)
     name = Column(String(
         255), nullable=False)
-    email = Column(String, nullable=False)
+    email = Column(String, nullable=True)
     picture = Column(Text, nullable=True)
     picture_data = Column(LargeBinary, nullable=True)
-    github_access_token = Column(String(200))
-
-    # def __init__(self, github_access_token):
-        # self.github_access_token = github_access_token
-
 
     def is_authenticated(self):
         return True
