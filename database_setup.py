@@ -5,6 +5,7 @@ from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship, sessionmaker
 from sqlalchemy import create_engine
 import datetime
+from flask_login import UserMixin
 
 Base = declarative_base()
 # DBSession = sessionmaker(bind=engine)
@@ -18,14 +19,26 @@ class User(Base):
     id = Column(Integer, primary_key=True)
     name = Column(String(
         255), nullable=False)
-    email = Column(String, nullable=True)
+    email = Column(String, nullable=False)
     picture = Column(Text, nullable=True)
     picture_data = Column(LargeBinary, nullable=True)
 
     def is_authenticated(self):
         return True
 
+    def is_active(self):
+        """True, as all users are active."""
+        return True
 
+    def get_id(self):
+        """Return the email address to satisfy Flask-Login's requirements."""
+        return True
+
+    def is_anonymous(self):
+        """False, as anonymous users aren't supported."""
+        return False
+
+        
 class Category(Base):
 
     __tablename__ = "category"
@@ -55,7 +68,6 @@ class Item(Base):
     name = Column(String(255), nullable=False)
     description = Column(Text, nullable=False)
     created = Column('Created', DateTime())
-    price = Column(String(8))
     category_id = Column(Integer, ForeignKey('category.id'))
     category = relationship(Category)
     user_id = Column(Integer, ForeignKey('user.id'))
@@ -68,7 +80,6 @@ class Item(Base):
             'name': self.name,
             'description': self.description,
             'id': self.id,
-            'price': self.price,
         }
 
 if __name__ == '__main__':

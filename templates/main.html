@@ -1,27 +1,8 @@
-<!DOCTYPE html>
-<html>
+{% include "header.html" %}
 
-<head>
-</head>
-
-<body>
-    <div class="main">
-        <ul>
-            {% for category in categories %}
-            <li>
-                <h1>{{category.name}}: {{category.id}}</h1></li>
-            {% endfor %}
-        </ul>
-        <ul> {% for item in items %}
-            <li>
-                <p>{{item.name}}: {{item.id}}
-                </p>
-            </li>
-            {% endfor %}
-        </ul>
-    </div>
-    </div>
-
-</body>
-
-</html>
+{% for category in categories %}
+    <h4>
+        <a href="{{url_for(' viewCategory', category_name = category.name)}}">{{ category.name }}</a>
+    </h4>
+{% endfor %}
+<div class="col-1-1"></div>
