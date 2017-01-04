@@ -82,38 +82,29 @@
         }
     </script>
 </head>
-
-<!--FACEBOOK SIGN IN -->
-<div class="col-1-1">
-    <div class="content">
-        <h2 class="textcenter light">Login</h2>
+<body>
+    <div class="main">
+        <h2>Login</h2>
+        <div class="content">
+            <fb:login-button data-size="large" scope="public_profile,email" onlogin="sendTokenToServer();">
+                <a href='javascript:sendTokenToServer()'>
+                    Login with Facebook
+                </a>
+            </fb:login-button>
+        </div>
+        <div class="content">
+            <span
+                class="g-signin"
+                data-width="wide"
+                data-scope="openid email"
+                data-clientid="525001115239-o1dkiihphtme5mcqmb829l7m3a6qecq0.apps.googleusercontent.com"
+                data-redirecturi="postmessage"
+                data-accesstype="offline"
+                data-cookiepolicy="single_host_origin"
+                data-callback="signInCallback"
+                data-approvalprompt="force"></span>
+        </div>
+        <div id="result" class="content textcenter"></div>
     </div>
-</div>
-<div class="col-1-1 textcenter loginmargin">
-    <div class="content">
-        <fb:login-button data-size="large" scope="public_profile,email" onlogin="sendTokenToServer();">
-            <a href='javascript:sendTokenToServer()'>
-                Login with Facebook
-            </a>
-        </fb:login-button>
-    </div>
-</div>
-<div id="signinButton" class="col-1-1 textcenter loginmargin">
-    <div class="content">
-        <span
-            class="g-signin"
-            data-width="wide"
-            data-scope="openid email"
-            data-clientid="525001115239-o1dkiihphtme5mcqmb829l7m3a6qecq0.apps.googleusercontent.com"
-            data-redirecturi="postmessage"
-            data-accesstype="offline"
-            data-cookiepolicy="single_host_origin"
-            data-callback="signInCallback"
-            data-approvalprompt="force"></span>
-    </div>
-</div>
-<div class="col-1-1 mobile-col-1-1">
-    <div id="result" class="content textcenter"></div>
-</div>
-
+</body>
 <!-- <a href="{{ url_for('disconnect') }}">Disconnect</a> -->

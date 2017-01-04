@@ -9,7 +9,7 @@
 		<meta name="google-signin-clientid" content="525001115239-o1dkiihphtme5mcqmb829l7m3a6qecq0.apps.googleusercontent.com">
 		<!-- <script src="https://code.jquery.com/jquery-3.1.1.min.js" integrity="sha256-hVVnYaiADRTO2PzUGmuLJr8BLUSjGIZsDYGmIJLv2b8=" crossorigin="anonymous"></script>
 		<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js" integrity="sha256-VazP97ZCwtekAsvgPBSUwPFKdrwD3unUfSGVYrahUqU=" crossorigin="anonymous"></script> -->
-		<link href="https://fonts.googleapis.com/css?family=Lato" rel="stylesheet">
+		<link href="https://fonts.googleapis.com/css?family=Muli|Antic+Slab" rel="stylesheet">
 		<script src="https://apis.google.com/js/platform.js?onload=start"></script>
 		<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='simplegrid.css') }}">
 		<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='style.css') }}">
@@ -25,41 +25,45 @@
 		<div role="navigation" id="nav" class="nav-collapse">
 			<ul>
 				<li class="active">
-					<a href="">Home</a>
+					<a href="{{ url_for('home') }}">Home</a>
 				</li>
-				<!--if user not logged in
-				<li> <a href="">Sign In</a>
-				</li>
-				else
-			    -------------------------->
+				{% if current_user.is_authenticated %}
+					<li>
+						<a href="{{ url_for('newCategory') }}">
+							New Category</a>
+					</li>
+					<li>
+						<a href="">
+							My Categories</a>
+					</li>
+					<li>
+						<a href="">
+							My Items</a>
+					</li>
+				{% endif %}
 				<li>
-					<a href="">New Category</a>
-				</li>
-				<li>
-					<a href="">My Categories</a>
-				</li>
-				<li>
-					<a href="">My Items</a>
+					<a href="{{ url_for('showLogin')}}">Sign in</a>
 				</li>
 			</ul>
 		</div>
 		<div role="main" class="main">
-			<a href="#nav" id="toggle">☰</a>
-			<h1>Catalog</h1>
-			<p>Intro</p>
-			<p>Categories</p>
-			<p>Items</p>
-			<p></p>
-			<p></p>
+			<a href="#nav" id="toggle" class="test">☰</a><br><br>
+			<div class="title">
+				<h1>Catalog</h1>
+			</div>
+			<div class="content">
+				<p id="site summary">
+					Simple, adaptable, data focused web application. Sign in to add, edit, and delete your categories and items.</p>
+				<p>
+					Intro</p>
+				<p>Categories</p>
+				<p>Items</p>
+				<p></p>
+				<p></p>
+			</div>
+			<script>
+				var navigation = responsiveNav("#nav", {customToggle: "#toggle"});
+			</script>
 		</div>
-		<!-- <div class="col-1-1 mobile-col-1-1 textcenter">
-				<div class="content">
-					<h1 class="nomargin">Catalog</h1><br><br>
-					<p>Simple, adaptable, data focused web application. Sign in to add, edit, and delete your categories and items.</p>
-				</div>
-			</div> -->
-		<script>
-			var navigation = responsiveNav("#nav", {customToggle: "#toggle"});
-		</script>
 	</body>
 </html>

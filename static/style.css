@@ -3,9 +3,10 @@ html, body {
 }
 
 body {
+    font-family: 'Muli', sans-serif;
     font-size: 16px;
     line-height: 1.5;
-    background: url(/static/dark_embroidery.png) repeat;
+    background: #111c38 url(/static/handmade_paper.png) repeat;
 }
 
 body, div, h1, h2, p, ol, ul, li {
@@ -47,6 +48,19 @@ a {
     box-sizing: border-box;
 }
 
+.title {
+    width: 100%;
+    text-align: center;
+}
+.headthing {
+    width: 100%;
+}
+.content {
+    font-family: 'Antic Slab', serif;
+}
+.test {
+    width: 100%;
+}
 #toggle {
     display: none;
     color: black;
@@ -70,15 +84,15 @@ a {
         max-height: 0;
         position: absolute;
         display: block;
-        overflow: hidden
+        overflow: hidden;
     }
     .nav-collapse {
         top: 0;
         width: 100%;
-        position: relative
+        position: relative;
     }
     .nav-collapse.opened {
-        max-height: 9999px
+        max-height: 9999px;
     }
     .nav-collapse a:hover {
         background: transparent
@@ -97,13 +111,15 @@ a {
         width: 70px;
         height: 55px;
         float: right;
+        text-align: right;
+        padding-right: .2em;
+        font-size: 1.1em;
         margin: 0 -2em 1em 0;
         overflow: hidden;
     }
     .main {
         -webkit-overflow-scrolling: auto;
         padding: 0 2em 2em;
-        top: 0;
         border-radius: 0;
         box-shadow: none;
         position: relative;
