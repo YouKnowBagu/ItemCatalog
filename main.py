@@ -64,7 +64,7 @@ def home():
     """Docstring placeholder."""
     categories = session.query(Category).all()
     items = session.query(Item).order_by(desc(Item.created)).limit(10).all()
-    return render_template('main.html', categories=categories, items=items)
+    return render_template('header.html', categories=categories, items=items)
 
 
 @app.route('/login')

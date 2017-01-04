@@ -1,0 +1,11 @@
+*.pyc
+*.log
+*.sqlite
+*.DS_Store
+.DS_Store
+.DS_Store?
+._*
+*.sh
+Vagrantfile
+vagrant
+
