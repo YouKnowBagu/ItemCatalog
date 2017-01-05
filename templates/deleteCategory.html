@@ -1,11 +1,18 @@
+{% include "nav.html" %}
 <html>
-
-<body>
-    <form method='post'>
-        <button type='submit'>Delete</button>
-        <p>{{category.id}}: {{category.name}}</p>
-        
-    </form>
-</body>
-
+    <body>
+        <div class="main">
+            <div class="title">
+                <h1>Delete Category</h1>
+            </div>
+            <div class="content">
+                <h2>WARNING: Deleting category will also delete all items associated with that category.</h2>
+                <form method='post'>
+                    <button type='submit'>Delete</button>
+                    <p>{{category.id}}:
+                        {{category.name}}</p>
+                </form>
+            </div>
+        </div>
+    </body>
 </html>

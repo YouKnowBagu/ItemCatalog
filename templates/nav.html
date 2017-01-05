@@ -33,37 +33,27 @@
 							New Category</a>
 					</li>
 					<li>
-						<a href="">
+						<a href="{{ url_for('userCategories')}}">
 							My Categories</a>
 					</li>
 					<li>
 						<a href="">
 							My Items</a>
 					</li>
-				{% endif %}
-				<li>
-					<a href="{{ url_for('showLogin')}}">Sign in</a>
-				</li>
-			</ul>
-		</div>
-		<div role="main" class="main">
-			<a href="#nav" id="toggle" class="test">☰</a><br><br>
-			<div class="title">
-				<h1>Catalog</h1>
+				</ul>
 			</div>
-			<div class="content">
-				<p id="site summary">
-					Simple, adaptable, data focused web application. Sign in to add, edit, and delete your categories and items.</p>
-				<p>
-					Intro</p>
-				<p>Categories</p>
-				<p>Items</p>
-				<p></p>
-				<p></p>
-			</div>
-			<script>
-				var navigation = responsiveNav("#nav", {customToggle: "#toggle"});
-			</script>
-		</div>
-	</body>
-</html>
+		{% else %}
+			<li>
+				<a href="{{ url_for('showLogin')}}">Sign in</a>
+			</li>
+		</ul>
+	</div>
+{% endif %}
+<div class="main">
+	<div class="navicon">
+		<a href="#nav" id="toggle" class="test">☰</a>
+	</div>
+	<script>
+		var navigation = responsiveNav("#nav", {customToggle: "#toggle"});
+	</script>
+</div>

@@ -3,8 +3,7 @@ html, body {
 }
 
 body {
-    font-family: 'Muli', sans-serif;
-    font-size: 16px;
+    font: 24px 'Antic Slab', serif;
     line-height: 1.5;
     background: #111c38 url(/static/handmade_paper.png) repeat;
 }
@@ -15,8 +14,28 @@ body, div, h1, h2, p, ol, ul, li {
     border: 0;
 }
 
+h1 {
+    text-align: center;
+}
+
+form {
+    display: block;
+    margin: 0 auto;
+    align-content: center;
+}
+
+input {
+    display: block;
+}
+
+.signup {
+    display: block;
+    text-align: center;
+    margin-bottom: 1em;
+}
+
 .nav-collapse {
-    width: 25%;
+    width: 20%;
     left: 0;
     position: relative;
     top: 2em;
@@ -38,47 +57,48 @@ a {
 }
 
 .main {
-    width: 75%;
+    width: 80%;
     background: #fff;
     position: fixed;
     top: .8em;
     bottom: 0;
     right: 0;
-    padding: 3em 4em;
+    padding: 2em 3em;
     box-sizing: border-box;
 }
 
 .title {
+    font: 32px 'Muli', sans-serif;
     width: 100%;
     text-align: center;
 }
-.headthing {
-    width: 100%;
-}
-.content {
+
+
+/*.content {
     font-family: 'Antic Slab', serif;
-}
-.test {
-    width: 100%;
-}
+}*/
+
 #toggle {
     display: none;
     color: black;
 }
 
 @media screen and (max-width: 40em) {
+    .title {
+        font-size: 75%;
+    }
+    .content {
+        font-size: 65%;
+    }
     .main {
         -webkit-overflow-scrolling: auto;
-        padding: 0 2em 2em;
+        padding: 0 1.5em .5em;
         border-radius: 0;
         box-shadow: none;
         position: relative;
         width: 100%;
         overflow: hidden;
     }
-}
-
-@media screen and (max-width: 40em) {
     .js .nav-collapse {
         clip: rect(0 0 0 0);
         max-height: 0;
@@ -99,7 +119,7 @@ a {
     }
     .nav-collapse .active a:hover {
         color: #fff;
-        background: rgba(0, 0, 0, .3)
+        background: rgba(0, 0, 0, .3);
     }
     #toggle {
         -webkit-touch-callout: none;
@@ -108,26 +128,21 @@ a {
         -ms-user-select: none;
         user-select: none;
         display: block;
-        width: 70px;
+        width: 100%;
         height: 55px;
         float: right;
         text-align: right;
         padding-right: .2em;
-        font-size: 1.1em;
-        margin: 0 -2em 1em 0;
-        overflow: hidden;
+        font-size: 2em;
+        margin: 0 0 .25em 0;
     }
-    .main {
-        -webkit-overflow-scrolling: auto;
-        padding: 0 2em 2em;
-        border-radius: 0;
-        box-shadow: none;
-        position: relative;
-        width: 100%;
-        overflow: hidden
+    .welcome {
+        text-align: center;
+        max-height: 100%;
+        max-width: auto;
     }
     .main::-webkit-scrollbar {
-        background-color: transparent
+        background-color: transparent;
     }
 }
 
@@ -137,22 +152,22 @@ a {
         -webkit-background-size: 200px 200px;
         -moz-background-size: 200px 200px;
         -o-background-size: 200px 200px;
-        background-size: 200px 200px
+        background-size: 200px 200px;
     }
     #toggle {
         -webkit-background-size: 100px 100px;
         -moz-background-size: 100px 100px;
         -o-background-size: 100px 100px;
-        background-size: 100px 100px
+        background-size: 100px 100px;
     }
 }
 
 @media screen and (min-width:76em) {
     .nav-collapse {
-        width: 18em
+        width: 25%;
     }
     .main {
         width: auto;
-        left: 18em
+        left: 16em;
     }
 }

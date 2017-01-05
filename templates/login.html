@@ -1,4 +1,4 @@
-{% include "header.html" %}
+{% include "nav.html" %}
 <head>
     <script src="//ajax.googleapis.com/ajax/libs/jquery/1.8.2/jquery.min.js"></script>
     <script src="https://apis.google.com/js/platform.js?onload=start"></script>
@@ -40,7 +40,7 @@
                         if (result) {
                             $('#result').html('Login Successful!</br>' + result + '</br>Redirecting...')
                             setTimeout(function () {
-                                window.location.href = "/home";
+                                window.location.href = "/";
                             }, 4000);
 
                         } else {
@@ -69,7 +69,7 @@
                         if (result) {
                             $('#result').html('Login Successful!</br>' + result + '</br>Redirecting...')
                             setTimeout(function () {
-                                window.location.href = "/catalog";
+                                window.location.href = "/";
                             }, 4000);
                         } else if (authResult['error']) {
                             console.log('There was an error: ' + authResult['error']);
@@ -84,15 +84,17 @@
 </head>
 <body>
     <div class="main">
-        <h2>Login</h2>
-        <div class="content">
+        <div class="title">
+            <h2>Sign In</h2>
+        </div>
+        <div class="signup">
             <fb:login-button data-size="large" scope="public_profile,email" onlogin="sendTokenToServer();">
                 <a href='javascript:sendTokenToServer()'>
-                    Login with Facebook
+                    Sign in with Facebook
                 </a>
             </fb:login-button>
         </div>
-        <div class="content">
+        <div class="signup">
             <span
                 class="g-signin"
                 data-width="wide"
@@ -104,7 +106,6 @@
                 data-callback="signInCallback"
                 data-approvalprompt="force"></span>
         </div>
-        <div id="result" class="content textcenter"></div>
+        <div id="result" class="welcome"></div>
     </div>
-</body>
-<!-- <a href="{{ url_for('disconnect') }}">Disconnect</a> -->
+    <!-- <a href="{{ url_for('disconnect') }}">Disconnect</a> -->

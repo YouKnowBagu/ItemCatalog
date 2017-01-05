@@ -1,7 +1,9 @@
 from wtforms import Form, BooleanField, StringField, validators, TextField
 from wtforms.widgets import TextArea
+from wtforms_alchemy import ModelForm
+from database_setup import Category
 
-
-class addEdit(Form):
-    name = StringField('Name',[validators.Length(min=3, max=20)])
-    description = TextField('Description',[validators.Length(min=3, max=20)], widget=TextArea())
+class CategoryForm(ModelForm):
+    class Meta:
+        model = Category
+        include = ['user_id']

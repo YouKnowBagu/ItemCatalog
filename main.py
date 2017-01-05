@@ -19,7 +19,8 @@ from oauth2client.client import FlowExchangeError, flow_from_clientsecrets
 from sqlalchemy import asc, create_engine, desc
 from sqlalchemy.orm import scoped_session, sessionmaker
 from database_setup import Base, Category, Item, User
-from forms2 import addEdit
+from forms2 import CategoryForm
+
 
 login_manager = LoginManager()
 
@@ -59,12 +60,20 @@ session = DBSession()
 
 
 @app.route('/')
+def landing():
+    return render_template('landing.html')
+
+
 @app.route('/catalog/')
 def home():
     """Docstring placeholder."""
     categories = session.query(Category).all()
-    items = session.query(Item).order_by(desc(Item.created)).limit(10).all()
-    return render_template('header.html', categories=categories, items=items)
+    if categories:
+        for cat in categories:
+            items = session.query(Item).filter_by(category_id=cat.id).all()
+            return render_template('main.html', categories=categories, items=items)
+    else:
+        return redirect(url_for('landing'))
 
 
 @app.route('/login')
@@ -80,7 +89,6 @@ def showLogin():
 def logout():
     login_session.pop('user_id', None)
     return redirect(url_for('home'))
-
 
 
 @app.route('/fbconnect', methods=['POST'])
@@ -106,7 +114,6 @@ def fbconnect():
     # strip expire tag from access token
     token = result.split("&")[0]
 
-
     url = 'https://graph.facebook.com/v2.4/me?%s&fields=name,id,email' % token
     h = httplib2.Http()
     result = h.request(url, 'GET')[1]
@@ -118,7 +125,9 @@ def fbconnect():
     login_session['email'] = data["email"]
     login_session['facebook_id'] = data["id"]
 
-    # The token must be stored in the login_session in order to properly logout, let's strip out the information before the equals sign in our token
+    # The token must be stored in the login_session in order to properly
+    # logout, let's strip out the information before the equals sign in our
+    # token
     stored_token = token.split("=")[1]
     login_session['access_token'] = stored_token
 
@@ -147,6 +156,7 @@ def fbconnect():
 
     flash("Now logged in as %s" % login_session['username'])
     return output
+
 
 @app.route('/gconnect', methods=['POST'])
 def gconnect():
@@ -219,6 +229,8 @@ def gconnect():
         user_id = createUser(login_session)
     login_session['user_id'] = user_id
 
+    picture = login_session['picture']
+    username = login_session['username']
     output = ''
     output += '<h1>Welcome, '
     output += login_session['username']
@@ -230,15 +242,18 @@ def gconnect():
     print "done!"
     return output
 
+
 @app.route('/fbdisconnect')
 def fbdisconnect():
     facebook_id = login_session['facebook_id']
     # The access token must me included to successfully logout
     access_token = login_session['access_token']
-    url = 'https://graph.facebook.com/%s/permissions?access_token=%s' % (facebook_id,access_token)
+    url = 'https://graph.facebook.com/%s/permissions?access_token=%s' % (
+        facebook_id, access_token)
     h = httplib2.Http()
     result = h.request(url, 'DELETE')[1]
     return "you have been logged out"
+
 
 @app.route('/gdisconnect')
 def gdisconnect():
@@ -258,7 +273,6 @@ def gdisconnect():
     result = h.request(url, 'GET')[0]
     print result
     print result['status']
-
 
 
 @app.route('/clearSession')
@@ -288,16 +302,16 @@ def cleardb():
 
 @app.route('/test', methods=['GET', 'POST'])
 def dataTest():
-    form=addEdit()
+    form = addEdit()
     if request.method == 'GET':
         return render_template('form.html', form=form)
-
 
 
 @app.route('/category/new', methods=['GET', 'POST'])
 @login_required
 def newCategory():
-    if request.method == 'POST':
+    form = CategoryForm(request.form)
+    if request.method == 'POST' and form.validate():
         newCategory = Category(
             name=request.form['name'], description=request.form['description'], user_id=login_session['user_id'])
         session.add(newCategory)
@@ -305,11 +319,10 @@ def newCategory():
         session.commit()
         return redirect(url_for('home'))
     else:
-        return render_template('newCategory.html')
+        return render_template('newCategory.html', form=form)
 
 
 @app.route('/category/<string:category_name>/edit', methods=['GET', 'POST'])
-
 def editCategory(category_name):
     editedcategory = session.query(
         Category).filter_by(name=category_name).first()
@@ -324,51 +337,63 @@ def editCategory(category_name):
         return render_template('editCategory.html', category=editedcategory)
 
 
-@app.route('/category/<string:category_name>/delete', methods=['GET', 'POST'])
-
-def deleteCategory(category_name):
-    if 'username' not in login_session:
-        return redirect('/login')
-    category = session.query(Category).filter_by(name=category_name).one()
+@app.route('/category/<int:category_id>/delete', methods=['GET', 'POST'])
+@login_required
+def deleteCategory(category_id):
+    category = session.query(Category).filter_by(id=category_id).one()
     if request.method == 'GET':
         return render_template('deleteCategory.html', category=category)
-    else:
-        session.delete(category)
-        session.commit()
-        flash("The category '%s' has been removed." % category.name, "success")
-        return redirect(url_for('home'))
+    items = session.query(Item).filter_by(category_id=category_id).all()
+    if items:
+        for i in items:
+            session.delete(i)
+    session.delete(category)
+    session.commit()
+    flash("The category '%s' has been removed." % category.name, "success")
+    return redirect(url_for('showLogin'))
 
 
 @app.route('/<int:category_id>', methods=['GET'])
-def viewCategory(category_name):
+def viewCategory(category_id):
     category = session.query(Category).filter_by(id=category_id).first()
     items = session.query(Item).filter_by(category_id=category.id).all()
     if request.method == 'GET':
         return render_template('category.html', category=category, items=items)
 
 
-# @app.route('/<string:category_name>/<int:item_id>', methods=['GET'])
-# def viewItem(category_name, item_id):
-#     category = session.query(Category).filter_by(name=category_name).first()
-#     item = session.query(Item).filter_by(
-#         id=item_id, category_id=category.id).first()
-#     if request.method == 'GET' and category.id == item.category.id:
-#         return render_template('item.html', category=category, item=item)
+@app.route('/mycategories', methods=['GET'])
+def userCategories():
+    if 'user_id' in login_session:
+        UserID = login_session['user_id']
+        usercats = session.query(Category).filter_by(user_id=UserID).all()
+        return render_template('userCategories.html', categories=usercats)
+    else:
+        return redirect(url_for('showLogin'))
+
+
+@app.route('/<int:category_id>/<int:item_id>', methods=['GET'])
+def viewItem(category_id, item_id):
+    category = session.query(Category).filter_by(id=category_id).first()
+    item = session.query(Item).filter_by(
+        id=item_id, category_id=category.id).first()
+    if request.method == 'GET':
+        return render_template('item.html', category=category, item=item)
 
 
 @app.route('/<int:category_id>/item/new', methods=['GET', 'POST'])
 def newItem(category_id):
-    category = session.query(Category).filter_by(id = category_id).first()
+    category = session.query(Category).filter_by(id=category_id).first()
     categories = session.query(Category).all()
     if request.method == 'POST':
         nitem = Item(name=request.form['name'], description=request.form[
-                       'description'], user_id = login_session['user_id'], category_id = category_id)
+            'description'], user_id=login_session['user_id'], category_id=category_id)
         session.add(nitem)
         session.commit()
         flash('New Item, %s, successfully created.' % (nitem.name))
         return redirect(url_for('home'))
     else:
         return render_template('newitem.html', category=category, categories=categories)
+
 
 @app.route('/item/<int:item_id>/edit',
            methods=['GET', 'POST'])

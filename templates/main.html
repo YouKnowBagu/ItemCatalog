@@ -1,1 +1,28 @@
-Error: Source sample is missing.
+{% include "nav.html" %}
+<html>
+	<body>
+		<div class="main">
+			<div class="title">
+				<h1>Index</h1>
+			</div>
+			<div class="content">
+				<ul>
+					{% for c in categories %}
+						<ul>
+							<li>
+								<a href="{{ url_for('viewCategory', category_id = c.id) }}">{{c.name}}</a>
+								<ul>
+									{% for i in items %}
+										<li>
+											<a href="{{ url_for('viewItem', category_id = c.id, item_id = i.id) }}">{{i.name}}</a>
+										</li>
+									{% endfor %}
+								</ul>
+							</li>
+						</ul>
+					{% endfor %}
+			</ul>
+		</div>
+	</div>
+</body>
+</html>

@@ -38,14 +38,14 @@ class User(Base):
         """False, as anonymous users aren't supported."""
         return False
 
-        
+
 class Category(Base):
 
     __tablename__ = "category"
 
     id = Column(Integer, primary_key=True)
     name = Column(String(255), nullable=False)
-    description = Column(String(255), nullable=True)
+    description = Column(String(255), nullable=False)
     user_id = Column(Integer, ForeignKey('user.id'))
     user = relationship(User)
     created = Column('Created', DateTime())

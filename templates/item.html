@@ -1,11 +1,14 @@
+{% include "nav.html" %}
 <html>
-
-<head>
-    <link rel="stylesheet" href="/static/css/skeleton.css">
-</head>
-
-<body>
-    <p class="eight columns offset-by-four">{{ item.name }}, {{ item.category.name }}</p>
+    <body>
+        <div class="main">
+            <div class="title">
+                <h1>{{ item.name }}</h1>
+                <a href="{{url_for('deleteItem', item_id = item.id)}}">
+                    Delete</a>
+            </br>
+            <a href="{{url_for('editItem', item_id = item.id) }}">Edit</a>
+        </div>
+    </div>
 </body>
-
 </html>
