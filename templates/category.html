@@ -3,15 +3,19 @@
     <div class="title">
         <h1>{{ category.name }}
         </h1>
-        <div class="content">
-            {% for i in items %}
-                <a href="{{ url_for('viewItem', category_id = category.id, item_id = i.id)}}">{{i.name}}</a>
-            {% endfor %}
-            <a href="{{url_for('newItem', category_id = category.id)}}">New Item</a>
-            <a href="{{url_for('editCategory', category_name = category.name)}}">
-                Edit</a>
-        </br>
+        <a href="{{url_for('newItem', category_id = category.id)}}">New Item |</a>
+        <a href="{{url_for('editCategory', category_id = category.id)}}">
+            Edit |</a>
         <a href="{{url_for('deleteCategory', category_id = category.id) }}">Delete</a>
+    </div>
+    <div class="content">
+        <ul>
+            {% for i in items %}
+                <li>
+                    <a href="{{ url_for('viewItem', category_id = category.id, item_id = i.id)}}">{{i.name}}</a>
+                </li>
+            {% endfor %}
+        </ul>
     </div>
 </div>
 </div>

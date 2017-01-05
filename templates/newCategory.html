@@ -7,14 +7,13 @@
             <div class="title">
                 <h1>New Category</h1>
             </div>
-            <div class="content">
+            <div class="content formformat">
                 <form action="{{ url_for('newCategory') }}" method="post">
-                    <label>Name:</label>
-                    <input name="name" type="text" value="">
-                    <label>Description:</label>
-                    <textarea name="description" type="text" value=""></textarea>
+                    <label>Name:</label><br>
+                    <input name="name" type="text" placeholder="Category Name" value=""><br>
+                    <label>Description:</label><br>
+                    <textarea name="description" placeholder="Category Description" rows="3" columns="200" type="text" value=""></textarea><br>
                     <input type='submit' value='Create'></input>
-
                     {{ form.csrf_token }}
                 </form>
             </div>

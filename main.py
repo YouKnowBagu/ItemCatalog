@@ -322,19 +322,22 @@ def newCategory():
         return render_template('newCategory.html', form=form)
 
 
-@app.route('/category/<string:category_name>/edit', methods=['GET', 'POST'])
-def editCategory(category_name):
+@app.route('/category/<int:category_id>/edit', methods=['GET', 'POST'])
+@login_required
+def editCategory(category_id):
+    form = CategoryForm(request.form)
     editedcategory = session.query(
-        Category).filter_by(name=category_name).first()
+        Category).filter_by(id=category_id).first()
     if request.method == 'POST':
-        if request.form['name']:
+        if request.form['name'] and request.form['description']:
             editedcategory.name = request.form['name']
+            editedcategory.description = request.form['description']
             flash('Category Successfully Edited %s' % editedcategory.name)
             return redirect(url_for('home'))
         else:
-            return redirect(url_for('editCategory', category_name=category_name))
+            return redirect(url_for('editCategory', form=form, category_id=category_id))
     else:
-        return render_template('editCategory.html', category=editedcategory)
+        return render_template('editCategory.html', category=editedcategory, form=form)
 
 
 @app.route('/category/<int:category_id>/delete', methods=['GET', 'POST'])
@@ -362,6 +365,7 @@ def viewCategory(category_id):
 
 
 @app.route('/mycategories', methods=['GET'])
+@login_required
 def userCategories():
     if 'user_id' in login_session:
         UserID = login_session['user_id']
@@ -381,6 +385,7 @@ def viewItem(category_id, item_id):
 
 
 @app.route('/<int:category_id>/item/new', methods=['GET', 'POST'])
+@login_required
 def newItem(category_id):
     category = session.query(Category).filter_by(id=category_id).first()
     categories = session.query(Category).all()
@@ -395,8 +400,8 @@ def newItem(category_id):
         return render_template('newitem.html', category=category, categories=categories)
 
 
-@app.route('/item/<int:item_id>/edit',
-           methods=['GET', 'POST'])
+@app.route('/item/<int:item_id>/edit', methods=['GET', 'POST'])
+@login_required
 def editItem(item_id):
     editeditem = session.query(Item).filter_by(id=item_id).first()
     if request.method == 'POST':
@@ -412,6 +417,7 @@ def editItem(item_id):
 
 
 @app.route('/item/<int:item_id>/delete', methods=['GET', 'POST'])
+@login_required
 def deleteItem(item_id):
     """Find and delete an item"""
     item = session.query(Item).filter_by(id=item_id).one()

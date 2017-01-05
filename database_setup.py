@@ -48,6 +48,7 @@ class Category(Base):
     description = Column(String(255), nullable=False)
     user_id = Column(Integer, ForeignKey('user.id'))
     user = relationship(User)
+    items = relationship('Item')
     created = Column('Created', DateTime())
 
     @property
@@ -69,7 +70,6 @@ class Item(Base):
     description = Column(Text, nullable=False)
     created = Column('Created', DateTime())
     category_id = Column(Integer, ForeignKey('category.id'))
-    category = relationship(Category)
     user_id = Column(Integer, ForeignKey('user.id'))
     user = relationship(User)
 

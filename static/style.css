@@ -16,6 +16,7 @@ body, div, h1, h2, p, ol, ul, li {
 
 h1 {
     text-align: center;
+    padding-bottom: .25em;
 }
 
 form {
@@ -25,9 +26,21 @@ form {
 }
 
 input {
-    display: block;
+    font-size: .75em;
+    height: auto;
+    width: auto;
+}
+textarea {
+    font-size: .75em;
 }
 
+ul {
+    margin-top: .5em;
+}
+.formformat {
+    display: flex;
+    margin: auto;
+}
 .signup {
     display: block;
     text-align: center;
@@ -73,10 +86,14 @@ a {
     text-align: center;
 }
 
+.items {
+    padding-left: 1em;
+}
 
-/*.content {
-    font-family: 'Antic Slab', serif;
-}*/
+label {
+    text-align: left;
+}
+
 
 #toggle {
     display: none;
@@ -85,11 +102,15 @@ a {
 
 @media screen and (max-width: 40em) {
     .title {
-        font-size: 75%;
+        font-size: .75em;
     }
     .content {
-        font-size: 65%;
+        font-size: .65em;
     }
+    li {
+        font-size: 1em;
+    }
+
     .main {
         -webkit-overflow-scrolling: auto;
         padding: 0 1.5em .5em;
