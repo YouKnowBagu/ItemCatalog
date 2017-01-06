@@ -2,6 +2,9 @@
 <html>
 	<body>
 		<div class="main">
+			<form method="post" action="/">
+				<input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+			</form>
 			<div class="title">
 				<h1>Index</h1>
 			</div>

@@ -8,8 +8,11 @@
     </head>
     <body>
         <div class="main">
+            <form method="post" action="/">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+            </form>
             <div class="title">
-                <h1>My Categories</h1>
+                <h1>My Items</h1>
             </div>
             <div class="content">
                 {% for c in categories %}

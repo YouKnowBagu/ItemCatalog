@@ -7,11 +7,8 @@
 		<meta name="author" content="">
 		<meta name="viewport" content="width=device-width,initial-scale=1">
 		<meta name="google-signin-clientid" content="525001115239-o1dkiihphtme5mcqmb829l7m3a6qecq0.apps.googleusercontent.com">
-		<!-- <script src="https://code.jquery.com/jquery-3.1.1.min.js" integrity="sha256-hVVnYaiADRTO2PzUGmuLJr8BLUSjGIZsDYGmIJLv2b8=" crossorigin="anonymous"></script>
-		<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js" integrity="sha256-VazP97ZCwtekAsvgPBSUwPFKdrwD3unUfSGVYrahUqU=" crossorigin="anonymous"></script> -->
 		<link href="https://fonts.googleapis.com/css?family=Muli|Antic+Slab" rel="stylesheet">
 		<script src="https://apis.google.com/js/platform.js?onload=start"></script>
-		<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='simplegrid.css') }}">
 		<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='style.css') }}">
 		<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='responsive-nav.css') }}">
 		<script src="{{ url_for('static', filename='responsive-nav.js') }}"></script>
@@ -35,10 +32,6 @@
 					<li>
 						<a href="{{ url_for('userCategories')}}">
 							My Categories</a>
-					</li>
-					<li>
-						<a href="">
-							My Items</a>
 					</li>
 					<li>
 						<a href="{{url_for('disconnect')}}">Disconnect</a>

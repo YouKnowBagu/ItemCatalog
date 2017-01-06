@@ -1,8 +1,10 @@
 {% include "nav.html" %}
 <head>
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     <script src="//ajax.googleapis.com/ajax/libs/jquery/1.8.2/jquery.min.js"></script>
     <script src="https://apis.google.com/js/platform.js?onload=start"></script>
     <script>
+        var csrftoken = $('meta[name=csrf-token]').attr('content')
         window.fbAsyncInit = function () {
             FB.init({
                 appId: '234398173670215', cookie: true, // enable cookies to allow the server to access
@@ -29,6 +31,13 @@
             console.log('Welcome!  Fetching your information.... ');
             FB.api('/me', function (response) {
                 console.log('Successful login for: ' + response.name);
+                $.ajaxSetup({
+                    beforeSend: function (xhr, settings) {
+                        if (!/^(GET|HEAD|OPTIONS|TRACE)$/i.test(settings.type) && !this.crossDomain) {
+                            xhr.setRequestHeader("X-CSRFToken", csrftoken)
+                        }
+                    }
+                })
                 $.ajax({
                     type: 'POST',
                     url: '/fbconnect?state={{STATE}}',
@@ -53,11 +62,19 @@
         }
     </script>
     <script>
+        var csrftoken = $('meta[name=csrf-token]').attr('content')
         function signInCallback(authResult) {
             if (authResult['code']) {
                 // Hide the sign-in button now that the user is authorized
                 $('#signinButton').attr('style', 'display: none');
                 // Send the one-time-use code to the server, if the server responds, write a 'login successful' message to the web page and then redirect back to the main restaurants page
+                $.ajaxSetup({
+                    beforeSend: function (xhr, settings) {
+                        if (!/^(GET|HEAD|OPTIONS|TRACE)$/i.test(settings.type) && !this.crossDomain) {
+                            xhr.setRequestHeader("X-CSRFToken", csrftoken)
+                        }
+                    }
+                })
                 $.ajax({
                     type: 'POST',
                     url: '/gconnect?state={{STATE}}',

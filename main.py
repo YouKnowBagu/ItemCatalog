@@ -19,7 +19,8 @@ from oauth2client.client import FlowExchangeError, flow_from_clientsecrets
 from sqlalchemy import asc, create_engine, desc
 from sqlalchemy.orm import scoped_session, sessionmaker
 from database_setup import Base, Category, Item, User
-from forms2 import CategoryForm
+from forms2 import CategoryForm, ItemForm
+from flask_wtf.csrf import CsrfProtect
 
 
 login_manager = LoginManager()
@@ -27,6 +28,7 @@ login_manager = LoginManager()
 app = Flask(__name__)
 
 login_manager.init_app(app)
+CsrfProtect(app)
 
 CLIENT_ID = json.loads(open('client_secrets.json', 'r').read())[
     'web']['client_id']
@@ -62,6 +64,20 @@ session = DBSession()
 @app.route('/')
 def landing():
     return render_template('landing.html')
+
+
+@app.route('/<int:category_id>/JSON')
+def categoryItemsJSON(category_id):
+    category = session.query(Category).filter_by(id=category_id).one()
+    items = session.query(Item).filter_by(
+        category_id=category_id).all()
+    return jsonify(Items=[i.serialize for i in items])
+
+
+@app.route('/<int:category_id>/<int:item_id>/JSON')
+def ItemJSON(category_id, item_id):
+    item = session.query(Item).filter_by(id=item_id).one()
+    return jsonify(Item=item.serialize)
 
 
 @app.route('/catalog/')
@@ -300,13 +316,6 @@ def cleardb():
     return "User DB cleared"
 
 
-@app.route('/test', methods=['GET', 'POST'])
-def dataTest():
-    form = addEdit()
-    if request.method == 'GET':
-        return render_template('form.html', form=form)
-
-
 @app.route('/category/new', methods=['GET', 'POST'])
 @login_required
 def newCategory():
@@ -328,7 +337,7 @@ def editCategory(category_id):
     form = CategoryForm(request.form)
     editedcategory = session.query(
         Category).filter_by(id=category_id).first()
-    if request.method == 'POST':
+    if request.method == 'POST' and form.validate():
         if request.form['name'] and request.form['description']:
             editedcategory.name = request.form['name']
             editedcategory.description = request.form['description']
@@ -389,24 +398,27 @@ def viewItem(category_id, item_id):
 def newItem(category_id):
     category = session.query(Category).filter_by(id=category_id).first()
     categories = session.query(Category).all()
-    if request.method == 'POST':
-        nitem = Item(name=request.form['name'], description=request.form[
+    form = ItemForm(request.form)
+    if request.method == 'POST' and form.validate():
+        newitem = Item(name=request.form['name'], description=request.form[
             'description'], user_id=login_session['user_id'], category_id=category_id)
         session.add(nitem)
         session.commit()
-        flash('New Item, %s, successfully created.' % (nitem.name))
+        flash('New Item, %s, successfully created.' % (newitem.name))
         return redirect(url_for('home'))
     else:
-        return render_template('newitem.html', category=category, categories=categories)
+        return render_template('newitem.html', category=category, categories=categories, form=form)
 
 
 @app.route('/item/<int:item_id>/edit', methods=['GET', 'POST'])
 @login_required
 def editItem(item_id):
     editeditem = session.query(Item).filter_by(id=item_id).first()
-    if request.method == 'POST':
-        if request.form['name']:
+    form = ItemForm(request.form)
+    if request.method == 'POST' and form.validate():
+        if request.form['name'] and request.form['description']:
             editeditem.name = request.form['name']
+            editeditem.description = request.form['description']
             session.commit()
             flash('Item Successfully Edited %s' % editeditem.name)
             return redirect(url_for('home'))
