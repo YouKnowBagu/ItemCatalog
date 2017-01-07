@@ -1,0 +1,13 @@
+{% include "nav.html" %}
+<div class="main">
+    <div class="title">
+        <h1>Delete Category</h1>
+    </div>
+    <div class="content">
+        <h2>WARNING: Deleting category will also delete all items associated with that category.</h2><br>
+        <form method='post'>
+            <button type='submit'>Delete</button>
+            {{ form.csrf_token }}
+        </form>
+    </div>
+</div>

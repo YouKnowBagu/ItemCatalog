@@ -1,10 +1,7 @@
 """Docstring placeholder."""
-# TODO Local authorization
-# TODO Add category button on home postmessage
-# TODO Login/logout design
-# TODO Search?
-# TODO
+
 from wtforms import Form, BooleanField, StringField, validators
+from flask_login import login_required
 import json
 import random
 import string
@@ -12,53 +9,36 @@ from jinja2 import Template
 import httplib2
 import requests
 from flask import session as login_session
-from flask import (Flask, flash, g, jsonify, make_response,
-                   redirect, render_template, request, url_for)
-from flask_login import LoginManager, login_user, logout_user, login_required
+from flask import Flask, flash, make_response, Blueprint
 from oauth2client.client import FlowExchangeError, flow_from_clientsecrets
 from sqlalchemy import asc, create_engine, desc
 from sqlalchemy.orm import scoped_session, sessionmaker
-from database_setup import Base, Category, Item, User
-from forms2 import CategoryForm, ItemForm
+from models import Base, Category, Item, User
+from modelforms import CategoryForm, ItemForm
+from database import init_db
 from flask_wtf.csrf import CsrfProtect
+from views.categories import categoryModule
+from views.items import itemModule
+from views.auth import authModule
+from views.site import siteModule
+init_db()
 
-
-login_manager = LoginManager()
+# login_manager = LoginManager()
 
 app = Flask(__name__)
 
-login_manager.init_app(app)
+
+
 CsrfProtect(app)
 
-CLIENT_ID = json.loads(open('client_secrets.json', 'r').read())[
-    'web']['client_id']
-APPLICATION_NAME = "Catalog"
-app.config['SQLALCHEMY_ECHO'] = True
+app.register_blueprint(categoryModule)
+app.register_blueprint(itemModule)
+app.register_blueprint(authModule)
+app.register_blueprint(siteModule)
 
 
-engine = create_engine('sqlite:///catalog.db')
-Base.metadata.bind = engine
 
-DBSession = sessionmaker(bind=engine)
-session = DBSession()
 
-# Base.query = DBSession.query_property()
-
-# blueprints: category, item, user
-
-# routes:
-# / home - home
-# /catalog - home
-# /catalog/<string:category_name> - view all items of a specific category
-# /catalog/<string_category_name>/<string:item_id> - detail item view
-# /category/new -create new Category
-# /category/<string:category_name>/edit - edit category
-# /category/<string:category_name>/delete - delete category
-# /item/new - new items
-# /item/<int:item_id>/edit - edit item
-# /item/<int:item_id>/delete - delete item
-# /login - login via google
-# /gdisconnect - delete user session
 
 
 @app.route('/')
@@ -442,27 +422,27 @@ def deleteItem(item_id):
         return redirect(url_for('home'))
 
 
-@login_manager.user_loader
-def load_user(userid):
-    """User loader for Flask Login. As the user is only stored
-    in the session an attempt is made to retrieve the user from the session.
-    In case this fails, None is returned.
-
-    Args:
-        userid: the user id
-
-    Returns:
-        the user object or None in case the user could not be retrieved from the session
-    """
-    try:
-        print "load_user called: %s" % userid
-        user = session.query(User).filter_by(id=str(userid)).first()
-
-        if not user:
-            return None
-        return user
-    except:
-        return None
+# @login_manager.user_loader
+# def load_user(userid):
+#     """User loader for Flask Login. As the user is only stored
+#     in the session an attempt is made to retrieve the user from the session.
+#     In case this fails, None is returned.
+#
+#     Args:
+#         userid: the user id
+#
+#     Returns:
+#         the user object or None in case the user could not be retrieved from the session
+#     """
+#     try:
+#         print "load_user called: %s" % userid
+#         user = session.query(User).filter_by(id=str(userid)).first()
+#
+#         if not user:
+#             return None
+#         return user
+#     except:
+#         return None
 
 
 def createUser(login_session):

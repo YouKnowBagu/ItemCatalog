@@ -1,0 +1,32 @@
+{% include "nav.html" %}
+<html>
+	<body>
+		<div class="main">
+			<form method="post" action="/">
+				<input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+			</form>
+			<div class="title">
+				<h1>Index</h1>
+			</div>
+			<div class="content">
+				<ul class="categories">
+					{% for category in categories %}
+						<li>
+							<a href="{{url_for('categories.viewCategory', category_id = category.id) }}">
+								{{ category.name }}
+
+								<ul class="items">
+									{% for i in category.items %}
+										<li>
+											<a href="{{url_for('items.viewItem', category_id = category.id, item_id = i.id)}}">
+												{{ i.name }}</a>
+										</li>
+									{% endfor %}
+								</ul>
+							</li>
+						{% endfor %}
+					</ul>
+				</div>
+			</div>
+		</body>
+	</html>

@@ -1,0 +1,15 @@
+{% include "nav.html" %}
+<div class="main">
+	<form method="post" action="/">
+		<input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+	</form>
+	<div class="title">
+		<h1>Catalog</h1>
+	</div>
+	<div class="content">
+		<p id="site summary">
+			Simple, adaptable, data focused web application. Sign in to add, edit, and delete your categories and items.</p>
+		<p></p>
+		<p></p>
+	</div>
+</div>

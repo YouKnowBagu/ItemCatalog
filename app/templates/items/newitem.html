@@ -1,0 +1,23 @@
+{% include "nav.html" %}
+<div class="main">
+    <div class="title">
+        <h1>New Item</h1>
+    </div>
+    <div class="content formformat">
+        <form action="{{ url_for('items.newItem', category_id=category.id) }}" method="post">
+            <label>Select Category:</label><br>
+            <select style="width: 175px; font-size: .75em;" name="category">
+                {% for c in categories %}
+                    <option>{{c.name}}</option>
+                {% endfor %}
+            </select><br>
+            <label>Name:</label><br>
+            <input name="name" type="text" value=""><br>
+            <label>Description:</label><br>
+            <input name="description" type="text" value=""><br>
+            <input type="submit" value="Create">
+            <input type="submit" value="Cancel">
+            {{ form.csrf_token }}
+        </form>
+    </div>
+</div>

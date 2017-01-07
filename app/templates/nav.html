@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+		<title>Code Catalog</title>
+		<meta name="description" content="">
+		<meta name="author" content="">
+		<meta name="viewport" content="width=device-width,initial-scale=1">
+		<meta name="google-signin-clientid" content="525001115239-o1dkiihphtme5mcqmb829l7m3a6qecq0.apps.googleusercontent.com">
+		<link href="https://fonts.googleapis.com/css?family=Muli|Antic+Slab" rel="stylesheet">
+		<script src="https://apis.google.com/js/platform.js?onload=start"></script>
+		<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='style.css') }}">
+		<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='responsive-nav.css') }}">
+		<script src="{{ url_for('static', filename='responsive-nav.js') }}"></script>
+		<script>
+			var doc = document,
+				docEl = doc.documentElement;
+			docEl.className = docEl.className.replace(/(^|\s)no-js(\s|$)/, " js ");
+		</script>
+	</head>
+	<body>
+		<div role="navigation" id="nav" class="nav-collapse">
+			<ul>
+				<li class="active">
+					<a href="{{ url_for('site.home') }}">Home</a>
+				</li>
+				{% if current_user.is_authenticated %}
+					<li>
+						<a href="{{ url_for('categories.newCategory') }}">
+							New Category</a>
+					</li>
+					<li>
+						<a href="{{ url_for('categories.userCategories')}}">
+							My Categories</a>
+					</li>
+					<li>
+						<a href="{{url_for('auth.disconnect')}}">Disconnect</a>
+					</li>
+				{% else %}
+					<li>
+						<a href="{{ url_for('auth.showLogin')}}">Sign in</a>
+					</li>
+				{% endif %}
+			</ul>
+		</div>
+		<div class="main">
+			<div class="navicon">
+				<a href="#nav" id="toggle" class="test">☰</a>
+			</div>
+			<script>
+				var navigation = responsiveNav("#nav", {customToggle: "#toggle"});
+			</script>
+		</div>

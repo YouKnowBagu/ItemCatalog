@@ -1,0 +1,29 @@
+{% include "nav.html" %}
+<div class="main">
+    <form method="post" action="/">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+    </form>
+    <div class="title">
+        <h1>{{ category.name }}
+        </h1>
+        <h2>{{ category.description }}</h2>
+        {% if current_user.id == category.user_id %}
+            <a href="{{url_for('categories.editCategory', category_id = category.id)}}">
+                Edit |</a>
+            <a href="{{url_for('categories.deleteCategory', category_id = category.id) }}">Delete</a>
+            <br>
+            <a href="{{url_for('items.newItem', category_id = category.id)}}">Add Item
+            </a>
+        {% endif %}
+    </div>
+    <div class="content">
+        <ul>
+            {% for i in items %}
+                <li>
+                    <a href="{{ url_for('items.viewItem', category_id = category.id, item_id = i.id)}}">{{i.name}}</a>
+                </li>
+            {% endfor %}
+        </ul>
+    </div>
+</div>
+</div>
