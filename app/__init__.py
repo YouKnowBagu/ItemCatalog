@@ -14,8 +14,9 @@ from views.categories import categoryModule
 from views.items import itemModule
 from views.site import siteModule
 
-app = Flask(__name__)
 login_manager = LoginManager()
+
+app = Flask(__name__)
 
 login_manager.init_app(app)
 
@@ -23,25 +24,20 @@ csrf = CSRFProtect(app)
 
 init_db()
 
+# session.add(User(name="Sean", email="sean@sean.com", id=1))
+# session.add(User(name="Cora", email="cora@cora.com", id=2))
+# session.add(User(name="Queue", email="Queueue@queueue.com", id=3))
+# session.commit()
+
 
 @login_manager.user_loader
 def load_user(userid):
-    """User loader for Flask Login. As the user is only stored
-    in the session an attempt is made to retrieve the user from the session.
-    In case this fails, None is returned.
-
-    Args:
-        userid: the user id
-
-    Returns:
-        the user object or None in case the user could not be
-        retrieved from the session
-    """
-    print "load_user called: %s" % userid
-    user = session.query(User).filter_by(id=str(userid)).first()
-    if not user:
+    user = session.query(User).filter_by(id=userid).first()
+    print "Trying to load %s" % user
+    if user:
+        return user
+    else:
         return None
-    return user
 
 
 @app.teardown_appcontext
