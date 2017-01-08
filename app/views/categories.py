@@ -1,7 +1,7 @@
 """Module containing all category related views"""
 from flask import session as login_session
-from flask import (Blueprint, Flask, flash, redirect, render_template, request,
-                   url_for)
+from flask import (Blueprint, Flask, flash, jsonify, redirect, render_template,
+                   request, url_for)
 from flask_login import login_required
 
 from app import Category, Item
@@ -84,13 +84,10 @@ def viewCategory(category_id):
 @categoryModule.route('/mycategories', methods=['GET'])
 @login_required
 def userCategories():
-    if 'user_id' in login_session:
-        UserID = login_session['user_id']
-        usercats = session.query(Category).filter_by(user_id=UserID).all()
-        return render_template(
-            'categories/userCategories.html', categories=usercats)
-    else:
-        return redirect(url_for('auth.showLogin'))
+    UserID = login_session['user_id']
+    usercats = session.query(Category).filter_by(user_id=UserID).all()
+    return render_template(
+        'categories/userCategories.html', categories=usercats)
 
 
 @categoryModule.route('/<int:category_id>/JSON')

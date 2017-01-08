@@ -34,20 +34,23 @@
 							My Categories</a>
 					</li>
 					<li>
-						<a href="{{url_for('auth.disconnect')}}">Disconnect</a>
+						<a href="{{ url_for('auth.disconnect')}}">Disconnect</a>
 					</li>
-				{% else %}
-					<li>
-						<a href="{{ url_for('auth.showLogin')}}">Sign in</a>
-					</li>
-				{% endif %}
+				</ul>
+			{% else %}
+				<li>
+					<a href="{{ url_for('auth.showLogin')}}">Sign in</a>
+				</li>
 			</ul>
+		{% endif %}
+	</div>
+	<div class="main">
+		<div class="navicon">
+			<a href="#nav" id="toggle">☰</a>
 		</div>
-		<div class="main">
-			<div class="navicon">
-				<a href="#nav" id="toggle" class="test">☰</a>
-			</div>
-			<script>
-				var navigation = responsiveNav("#nav", {customToggle: "#toggle"});
-			</script>
-		</div>
+		<script>
+			var navigation = responsiveNav("#nav", {customToggle: "#toggle"});
+		</script>
+	</div>
+</body>
+</html>

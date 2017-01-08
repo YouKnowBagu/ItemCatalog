@@ -1,22 +1,17 @@
 {% include "nav.html" %}
 {% from "_formhelpers.html" import render_field %}
-
-<html>
-    <body>
-        <div class="main">
-            <div class="title">
-                <h1>New Category</h1>
-            </div>
-            <div class="content formformat">
-                <form action="{{ url_for('categories.newCategory') }}" method="post">
-                    <label>Name:</label><br>
-                    <input name="name" type="text" placeholder="Category Name" value=""><br>
-                    <label>Description:</label><br>
-                    <textarea name="description" placeholder="Category Description" rows="3" columns="200" type="text" value=""></textarea><br>
-                    <input type='submit' value='Create'></input>
-                    {{ form.csrf_token }}
-                </form>
-            </div>
-        </div>
-    </body>
-</html>
+<div class="main">
+    <div class="title">
+        <h1>New Category</h1>
+    </div>
+    <div class="content formformat">
+        <form action="{{ url_for('categories.newCategory') }}" method="post">
+            <label>Name:</label><br>
+            <input name="name" type="text" placeholder="Category Name" value=""><br>
+            <label>Description:</label><br>
+            <textarea name="description" placeholder="Category Description" rows="3" columns="200" type="text" value=""></textarea><br>
+            <input type='submit' value='Create'></input>
+            {{ form.csrf_token }}
+        </form>
+    </div>
+</div>

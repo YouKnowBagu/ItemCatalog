@@ -6,9 +6,8 @@ import string
 import httplib2
 import requests
 from flask import session as login_session
-from flask import (Blueprint, flash, jsonify, make_response, redirect,
-                   render_template, request, url_for)
-from flask_login import LoginManager, current_user
+from flask import (Blueprint, flash, make_response, redirect, render_template,
+                   request, url_for)
 from oauth2client.client import FlowExchangeError, flow_from_clientsecrets
 
 from app.database import session

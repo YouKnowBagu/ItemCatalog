@@ -1,20 +1,18 @@
 {% include "nav.html" %}
-<body>
-    <div class="main">
-        <form method="post" action="/">
-            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
-        </form>
-        <div class="title">
-            <h1>My Categories</h1>
-        </div>
-        <div class="content">
-            <ul>
-                {% for c in categories %}
-                    <li>
-                        <a href="{{ url_for('categories.viewCategory', category_id = c.id) }}">{{c.name}}</a>
-                    </li>
-                {% endfor %}
-            </ul>
-        </div>
+<div class="main">
+    <form method="post" action="/">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+    </form>
+    <div class="title">
+        <h1>My Categories</h1>
     </div>
-</body>
+    <div class="content">
+        <ul>
+            {% for c in categories %}
+                <li>
+                    <a href="{{ url_for('categories.viewCategory', category_id = c.id) }}">{{c.name}}</a>
+                </li>
+            {% endfor %}
+        </ul>
+    </div>
+</div>

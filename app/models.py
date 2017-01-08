@@ -80,11 +80,3 @@ class Item(Base):
             'description': self.description,
             'id': self.id,
         }
-
-
-if __name__ == '__main__':
-    engine = create_engine('sqlite:///catalog.db')
-    Base.metadata.create_all(engine)
-
-    DBSession = sessionmaker(bind=engine)
-    session = DBSession()
