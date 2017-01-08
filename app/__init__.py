@@ -1,15 +1,14 @@
 """App initialization file.  Instantiates app, database, login_manager.  Registers view blueprints.  Defines user_loader callback for LoginManager."""
-import json
 
 from flask import session as login_session
 from flask import Flask, render_template
+from flask_login import (LoginManager, current_user, login_required,
+                         login_user, logout_user)
+from flask_wtf.csrf import CSRFProtect
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 
 from database import init_db
-from flask_login import (LoginManager, current_user, login_required,
-                         login_user, logout_user)
-from flask_wtf.csrf import CSRFProtect
 from models import Base, Category, Item, User
 from views.auth import authModule
 from views.categories import categoryModule
@@ -23,7 +22,6 @@ login_manager = LoginManager()
 login_manager.init_app(app)
 
 csrf = CSRFProtect(app)
-
 engine = create_engine('sqlite:///catalog.db')
 Base.metadata.bind = engine
 

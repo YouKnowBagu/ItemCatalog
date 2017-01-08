@@ -1,16 +1,13 @@
 {% include "nav.html" %}
-<html>
-    <body>
-        <div class="main">
-            <div class="title">
-                <h1>Delete Item</h1>
-            </div>
-            <div class="content">
-                <form method='post'>
-                    <button type='submit'>Delete</button>
-                    <p>{{item.name}},{{item.id}}</p>
-                </form>
-            </div>
-        </div>
-    </body>
-</html>
+<div class="main">
+    <div class="title">
+        <h1>Delete Item</h1>
+    </div>
+    <div class="content formformat">
+        <form method='post'>
+            <button type='submit'>Delete</button>
+            <p>{{item.name}},{{item.id}}</p>
+            {{ form.csrf_token }}
+        </form>
+    </div>
+</div>

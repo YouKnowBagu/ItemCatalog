@@ -1,16 +1,14 @@
 {% include "nav.html" %}
-<body>
-    <form method="post" action="/">
-        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
-    </form>
-    <div class="main">
-        <div class="title">
-            <h1>{{ item.name }}</h1>
-            {% if current_user.id == category.user_id %}
-                <a href="{{url_for('items.editItem', item_id = item.id) }}">Edit |</a>
-                <a href="{{url_for('items.deleteItem', item_id = item.id)}}">
-                    Delete</a>
-            {% endif %}
-        </div>
+<form method="post" action="/">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+</form>
+<div class="main">
+    <div class="title">
+        <h1>{{ item.name }}</h1>
+        {% if current_user.id == item.user_id %}
+            <a href="{{url_for('items.editItem', item_id = item.id) }}">Edit |</a>
+            <a href="{{url_for('items.deleteItem', item_id = item.id)}}">
+                Delete</a>
+        {% endif %}
     </div>
-</body>
+</div>

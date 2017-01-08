@@ -2,11 +2,11 @@
 from flask import session as login_session
 from flask import (Blueprint, Flask, flash, redirect, render_template, request,
                    url_for)
-
-from database import session
 from flask_login import login_required
-from modelforms import CategoryForm, ItemForm
-from models import Category, Item, User
+
+from app import Category, Item
+from app.database import session
+from app.modelforms import CategoryForm
 
 categoryModule = Blueprint('categories', __name__)
 
@@ -69,7 +69,7 @@ def deleteCategory(category_id):
     session.delete(category)
     session.commit()
     flash("The category '%s' has been removed." % category.name, "success")
-    return redirect(url_for('auth.showLogin'))
+    return redirect(url_for('site.home'))
 
 
 @categoryModule.route('/<int:category_id>', methods=['GET'])

@@ -3,11 +3,11 @@
 from flask import session as login_session
 from flask import (Blueprint, flash, jsonify, redirect, render_template,
                    request, url_for)
+from flask_login import login_required
 
-from database import session
-from flask_login import current_user, login_required
-from modelforms import CategoryForm, ItemForm
-from models import Category, Item, User
+from app import Category, Item, User
+from app.database import session
+from app.modelforms import CategoryForm, ItemForm
 
 itemModule = Blueprint('items', __name__)
 
@@ -60,17 +60,15 @@ def editItem(item_id):
     """View for the form to edit an item"""
     editeditem = session.query(Item).filter_by(id=item_id).first()
     form = ItemForm(request.form)
+    if request.method == 'GET':
+        return render_template(
+            'items/editItem.html', item=editeditem, form=form)
     if request.method == 'POST' and form.validate():
-        if request.form['name'] and request.form['description']:
-            editeditem.name = request.form['name']
-            editeditem.description = request.form['description']
-            session.commit()
-            flash('Item Successfully Edited %s' % editeditem.name)
-            return redirect(url_for('site.home'))
-        else:
-            return redirect(url_for('items.editItem', item_id=item_id))
-    else:
-        return render_template('items/editItem.html', item=editeditem)
+        editeditem.name = request.form['name']
+        editeditem.description = request.form['description']
+        session.commit()
+        flash('Item Successfully Edited %s' % editeditem.name)
+        return redirect(url_for('site.home'))
 
 
 @itemModule.route('/item/<int:item_id>/delete', methods=['GET', 'POST'])
