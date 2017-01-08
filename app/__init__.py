@@ -24,11 +24,6 @@ csrf = CSRFProtect(app)
 
 init_db()
 
-# session.add(User(name="Sean", email="sean@sean.com", id=1))
-# session.add(User(name="Cora", email="cora@cora.com", id=2))
-# session.add(User(name="Queue", email="Queueue@queueue.com", id=3))
-# session.commit()
-
 
 @login_manager.user_loader
 def load_user(userid):
