@@ -59,15 +59,19 @@ def newItem(category_id):
 def editItem(item_id):
     """View for the form to edit an item."""
     editeditem = session.query(Item).filter_by(id=item_id).first()
+    owner = editeditem.user_id
     form = ItemForm(request.form)
-    if request.method == 'GET':
-        return render_template(
-            'items/editItem.html', item=editeditem, form=form)
-    if request.method == 'POST' and form.validate():
-        editeditem.name = request.form['name']
-        editeditem.description = request.form['description']
-        session.commit()
-        flash('Item Successfully Edited %s' % editeditem.name)
+    if login_session['user_id'] == owner:
+        if request.method == 'POST' and form.validate:
+            editeditem.name = request.form['name']
+            editeditem.description = request.form['description']
+            session.commit()
+            flash('Item Successfully Edited %s' % editeditem.name)
+            return redirect(url_for('site.home'))
+        else:
+            return render_template(
+                'items/editItem.html', item=editeditem, form=form)
+    else:
         return redirect(url_for('site.home'))
 
 
@@ -77,10 +81,15 @@ def deleteItem(item_id):
     """Find and delete an item."""
     item = session.query(Item).filter_by(id=item_id).one()
     form = ItemForm(request.form)
-    if request.method == 'GET':
-        return render_template('items/deleteItem.html', item=item, form=form)
+    owner = item.user_id
+    if login_session['user_id'] == owner:
+        if request.method == 'GET':
+            return render_template(
+                'items/deleteItem.html', item=item, form=form)
+        else:
+            session.delete(item)
+            session.commit()
+            flash("The item '%s' has been removed." % item.name, "success")
+            return redirect(url_for('site.home'))
     else:
-        session.delete(item)
-        session.commit()
-        flash("The item '%s' has been removed." % item.name, "success")
         return redirect(url_for('site.home'))

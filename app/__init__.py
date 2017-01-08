@@ -4,31 +4,24 @@ from flask import Flask
 from flask_login import LoginManager
 from flask_wtf.csrf import CSRFProtect
 from sqlalchemy import create_engine
-from sqlalchemy.orm import sessionmaker
+from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy.orm import scoped_session, sessionmaker
 
-from database import init_db
-from models import Base, Category, User
+from database import init_db, session
+from models import Base, Category, Item, User
 from views.auth import authModule
 from views.categories import categoryModule
 from views.items import itemModule
 from views.site import siteModule
 
-init_db()
 app = Flask(__name__)
 login_manager = LoginManager()
 
 login_manager.init_app(app)
 
 csrf = CSRFProtect(app)
-engine = create_engine('sqlite:///catalog.db')
-Base.metadata.bind = engine
 
-DBSession = sessionmaker(bind=engine)
-session = DBSession()
-
-mycategory = Category(name="banana", description="a banana", user_id=5)
-session.add(mycategory)
-session.commit()
+init_db()
 
 
 @login_manager.user_loader
@@ -49,6 +42,11 @@ def load_user(userid):
     if not user:
         return None
     return user
+
+
+@app.teardown_appcontext
+def shutdown_session(exception=None):
+    session.remove()
 
 
 app.register_blueprint(categoryModule)
