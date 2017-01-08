@@ -1,4 +1,4 @@
-"""Module containing login and authorized user views"""
+"""Module containing login and authorized user views."""
 import json
 import random
 import string
@@ -11,7 +11,6 @@ from flask import (Blueprint, flash, make_response, redirect, render_template,
 from oauth2client.client import FlowExchangeError, flow_from_clientsecrets
 
 from app.database import session
-from app.modelforms import CategoryForm, ItemForm
 from app.models import Category, Item, User
 
 authModule = Blueprint('auth', __name__)

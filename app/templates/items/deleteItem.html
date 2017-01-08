@@ -6,7 +6,8 @@
     <div class="content formformat">
         <form method='post'>
             <button type='submit'>Delete</button>
-            <p>{{item.name}},{{item.id}}</p>
+            <p>Clicking delete will permanently remove
+                {{item.name}}. Press delete to continue.</p>
             {{ form.csrf_token }}
         </form>
     </div>

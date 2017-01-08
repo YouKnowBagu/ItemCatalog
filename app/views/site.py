@@ -1,21 +1,17 @@
 """Module for basic site related views."""
 
 from flask import session as login_session
-from flask import (Blueprint, flash, g, redirect, render_template, request,
-                   url_for)
-from flask_login import current_user
-from sqlalchemy.orm import sessionmaker
+from flask import Blueprint, g, redirect, render_template, request, url_for
 
-from app import Category, Item, User
 from app.database import session
-from app.modelforms import CategoryForm, ItemForm
+from app.models import Category, Item, User
 
 siteModule = Blueprint('site', __name__)
 
 
 @siteModule.route('/clearSession')
 def clearSession():
-    """Clears sticky user sessions, used as a test for development.  Disable on production """
+    """Clear sticky user sessions, used as a test for development.  Disable on production."""
     login_session.clear()
     session.commit()
     return "Session cleared"
@@ -23,7 +19,7 @@ def clearSession():
 
 @siteModule.route('/cleardb')
 def cleardb():
-    """Deletes all items from database, used as a test for development.  Disable on production """
+    """Delete all items from database, used as a test for development. Disable on production."""
     users = session.query(User).all()
     categories = session.query(Category).all()
     items = session.query(Item).all()
@@ -39,7 +35,7 @@ def cleardb():
 
 @siteModule.route('/')
 def landing():
-    """Simple landing with a brief description of the app"""
+    """Simple landing with a brief description of the appself."""
     return render_template('/home/landing.html')
 
 

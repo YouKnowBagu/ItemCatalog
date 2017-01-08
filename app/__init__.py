@@ -1,15 +1,13 @@
 """App initialization file.  Instantiates app, database, login_manager.  Registers view blueprints.  Defines user_loader callback for LoginManager."""
 
-from flask import session as login_session
-from flask import Flask, render_template
-from flask_login import (LoginManager, current_user, login_required,
-                         login_user, logout_user)
+from flask import Flask
+from flask_login import LoginManager
 from flask_wtf.csrf import CSRFProtect
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 
 from database import init_db
-from models import Base, Category, Item, User
+from models import Base, Category, User
 from views.auth import authModule
 from views.categories import categoryModule
 from views.items import itemModule
@@ -27,6 +25,10 @@ Base.metadata.bind = engine
 
 DBSession = sessionmaker(bind=engine)
 session = DBSession()
+
+mycategory = Category(name="banana", description="a banana", user_id=5)
+session.add(mycategory)
+session.commit()
 
 
 @login_manager.user_loader

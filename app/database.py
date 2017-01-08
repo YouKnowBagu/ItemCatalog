@@ -5,7 +5,7 @@ from sqlalchemy.orm import scoped_session, sessionmaker
 Base = declarative_base()
 
 engine = create_engine('sqlite:///catalog.db')
-Base.metadata.bind = engine
+Base.metadata.create_all(engine)
 
 DBSession = sessionmaker(bind=engine)
 session = DBSession()

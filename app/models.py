@@ -1,9 +1,9 @@
 import datetime
 
 from sqlalchemy import (Column, DateTime, ForeignKey, Integer, LargeBinary,
-                        String, Text, create_engine)
+                        String, Text)
 from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy.orm import relationship, sessionmaker
+from sqlalchemy.orm import relationship
 
 Base = declarative_base()
 
@@ -16,6 +16,8 @@ class User(Base):
     name = Column(String(255), nullable=False)
     email = Column(String, nullable=False)
     picture = Column(Text, nullable=True)
+    items = relationship('Item')
+    categories = relationship('Category')
     picture_data = Column(LargeBinary, nullable=True)
 
     def is_authenticated(self):
@@ -42,13 +44,12 @@ class Category(Base):
     name = Column(String(255), nullable=False)
     description = Column(String(255), nullable=True)
     user_id = Column(Integer, ForeignKey('user.id'))
-    user = relationship(User)
     items = relationship('Item')
     created = Column('Created', DateTime())
 
     @property
     def serialize(self):
-        """Return object data in easily serializable format"""
+        """Return object data in easily serializable format."""
         return {
             'name': self.name,
             'id': self.id,
@@ -68,11 +69,10 @@ class Item(Base):
     created = Column('Created', DateTime())
     category_id = Column(Integer, ForeignKey('category.id'))
     user_id = Column(Integer, ForeignKey('user.id'))
-    user = relationship(User)
 
     @property
     def serialize(self):
-        """Return object data in easily serializable format"""
+        """Return object data in easily serializable format."""
         return {
             'category': self.category_id,
             'user': self.user_id,
